@@ -2,13 +2,17 @@ import mongoose from "mongoose";
 
 const followerSchema = new mongoose.Schema({
     userId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
     },
-    friendUserId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
-    }
-}) 
+    followers:[{
+        friendUserId:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user"
+        }
+    }]
+},{
+    versionKey : false
+});
 
-export const Follower = mongoose.model("Follower",followerSchema);
+export const Follower = mongoose.model("follower",followerSchema);
