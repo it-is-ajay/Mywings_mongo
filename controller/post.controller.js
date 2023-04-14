@@ -59,7 +59,6 @@ export const save = async (request,response,next)=>{
     }
 }
 
-
 export const likePost = async (request,response,next)=>{
     try {
         let errors = await validationResult(request);
