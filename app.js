@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
-const url = "mongodb+srv://itsAjay:Ajey12345@cluster0.3j5dkpt.mongodb.net/?retryWrites=true&w=majority";
+const url = "mongodb+srv://itsAjay:Ajey12345@cluster0.3j5dkpt.mongodb.net/mywings?retryWrites=true&w=majority";
 
 mongoose.connect(url)
 .then(result=>{
