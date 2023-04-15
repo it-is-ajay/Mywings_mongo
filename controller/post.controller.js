@@ -97,7 +97,7 @@ export const savePost = async (request, response, next) => {
                 let index = postFound.saveItems.findIndex((user) => { return user.friendUserId == request.body.friendUserId });
                 postFound.saveItems.splice(index, 1);
                 await postFound.save();
-                return response.status(200).json({ message: " you unliked the post", status: true })
+                return response.status(200).json({ message: " you unsaved the post", status: true })
             }
             else {
                 postFound.saveItems.push({ userId: request.body.userId });

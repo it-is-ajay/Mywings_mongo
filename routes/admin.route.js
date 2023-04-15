@@ -2,6 +2,13 @@ import express from "express";
 // import {uploadPostSubmit,editProfile,viewUsers,viewAllPosts,seeBooking,confirmBooking,deletePost,seeRequestForm,viewInterestedContestantsAccept,sendRequest,viewInterestedContestants,viewSelectedContestants, interestedContestants, signIn, signOut, saveAdminPost, spamUser, viewSpam} from "../controller/admin.controller.js"; 
 
 const router = express.Router();
+import { banUser,getBanUser,signUp,adminPost,unBanUser,viewSpam } from "../controller/admin.controller.js";
+router.post("/banUser",banUser)
+router.get("/getBanUser",getBanUser)
+router.get("/unBanUser",unBanUser)    
+router.get("/viewSpam",viewSpam)     
+router.post("/signUp",signUp)         
+router.post("/uploadPost",adminPost)  
 
 // router.post("/uploadPost/submit",uploadPostSubmit)
 
