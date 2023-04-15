@@ -1,7 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import UserRouter from "./routs/user.routs.js"
+import UserRouter from "./routes/user.route.js"
+import AdminRouter from "./routes/admin.routes.js"
 
 const app = express();
 app.use(bodyParser.json());
@@ -18,7 +19,7 @@ mongoose.connect(url)
 
 app.use("/user",UserRouter);
 // app.use("/post");
-// app.use("/admin");
+app.use("/admin",AdminRouter);
 
 app.listen(3000,()=>{
     console.log("Server started...");
