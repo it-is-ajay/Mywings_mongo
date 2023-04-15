@@ -1,16 +1,18 @@
 import express from "express";
-import { postPage,getAllComments,getAllLikes,getSavedPost,getAllPost,commentPost,save,likePost, savePost} from "../controller/post.controller.js";
+import { uploadPost,postPage,getAllComments,getAllLikes,getSavedPost,getAllPost,commentPost,likePost, savePost} from "../controller/post.controller.js";
 
 const router = express.Router();
 
 
 router.get("/postPage",postPage);
-router.post("/save",save);
+router.post("/uploadPost",uploadPost)
+
 router.post("/like",likePost);
 router.get("/getPost",getAllPost);
-router.get("/getLike",getAllLikes);
+
+router.post("/getLike",getAllLikes);
 router.get("/getSavedPost",getSavedPost);
-router.get("/getComment",getAllComments);
+router.post("/getComment",getAllComments);
 router.post("/comment",commentPost);
 router.post("/savePost",savePost);
 

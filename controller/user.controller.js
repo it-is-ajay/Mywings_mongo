@@ -10,7 +10,14 @@ export const help = async (request,response)=>{
         return response.status(500).json({ result: "internal server error", status: false });
     }
 }
-
+export const signUp = async (request , response)=>{
+    try{
+        User.create(request.body)
+        return response.status(200).json({followers : await Follower.find({userId:request.params.userId}),status:true});
+    }catch(err){
+        return response.status(500).json({ result: "internal server error", status: false });
+    }
+}
 export const follower = async (request, response) => {
     try {
         return (await Follower.findOne({ userId: request.body.userId, friendUserId: request.body.friendUserId }))
@@ -85,3 +92,25 @@ export const searchProfileByKeyword = async (request, response) => {
         return response.status(500).json({ error: "Internal Server Error", status: false });
     }
 }
+
+
+export const deleteAccount = async (request,response)=>{
+    //console.log(request.body.userId);
+    User.deleteOne({_id: request.body.userId})
+   .then(result=>{
+      return response.status(200).json({message: "user deleted..", status: true});
+   }).catch(err=>{
+       return response.status(500).json({message: "Internal Server Error", status: false});
+   });
+}
+
+// export const helpRequest = (request,response,next)=>{
+//     console.log(request.body.userId);
+//     console.log(request.body.help);
+//     Help.create({userId:request.body.userId},{problem:request.body.help})
+//     .then(result=>{
+//         return response.status(200).json({message: "user help..", status: true});
+//      }).catch(err=>{
+//          return response.status(500).json({message: "Internal Server Error", status: false});
+//      });
+// }

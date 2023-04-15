@@ -1,7 +1,8 @@
-import { Admin } from "../model/admin.model.js";
-import { User } from "../model/user.model.js";
-import { Collaboration } from "../model/collaborationWith.model.js";
-import { CollaborationForm } from "../model/collaborationForm.model.js";
+import { Admin } from "../module/admin.model.js";
+import { User } from "../module/user.model.js";
+import { Collaboration } from "../module/collaborationWith.model.js";
+import { CollaborationForm } from "../module/collaborationForm.model.js";
+import { AdminPost } from "../module/adminPosts.model.js";
 
 export const editProfile = async (request, response, next) => {
     try {
@@ -13,6 +14,10 @@ export const editProfile = async (request, response, next) => {
     } catch (err) {
         console.log(err);
     }
+}
+
+export const uploadPostSubmit = async (request,response,next)=>{
+    
 }
 export const viewUsers = async (request, response, next) => {
     try {
@@ -26,7 +31,7 @@ export const viewUsers = async (request, response, next) => {
 
 export const deletePost = (request, response, next) => {
     let adminPostId = request.params.adminPostId;
-    adminPosts.destroy({id: adminPostId }).then(result => {
+    AdminPost.destroy({id: adminPostId }).then(result => {
         return response.status(200).json({ message: "Post removed", status: true });
     }).catch(err => {
         return response.status(500).json({ error: "Internal Server Error", status: false });
