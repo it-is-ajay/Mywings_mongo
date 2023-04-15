@@ -1,7 +1,7 @@
-import { User } from "../module/user.model.js"
-import { Follower } from "../module/follower.model.js";
-import { Following } from "../module/following.model.js";
-import { Help } from "../module/help.model.js";
+import { User } from "../model/user.model.js"
+import { Follower } from "../model/follower.model.js";
+import { Following } from "../model/following.model.js";
+import { Help } from "../model/help.model.js";
 
 export const help = async (request, response) => {
     try {

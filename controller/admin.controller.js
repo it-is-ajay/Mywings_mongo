@@ -1,8 +1,8 @@
-import { Admin } from "../module/admin.model.js";
-import { User } from "../module/user.model.js";
-import { Collaboration } from "../module/collaborationWith.model.js";
-import { CollaborationForm } from "../module/collaborationForm.model.js";
-import { AdminPost } from "../module/adminPosts.model.js";
+import { Admin } from "../model/admin.model.js";
+import { User } from "../model/user.model.js";
+import { Collaboration } from "../model/collaborationWith.model.js";
+import { CollaborationForm } from "../model/collaborationForm.model.js";
+import { AdminPost } from "../model/adminPosts.model.js";
 
 export const editProfile = async (request, response, next) => {
     try {
