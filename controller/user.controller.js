@@ -23,7 +23,7 @@ export const follower = async (request, response) => {
         }
         else {
             let saved = await Follower.create({
-                userId: request.params.userId,
+                 userId: request.params.userId,
                 followers: [{ friendUserId: request.params.friendUserId }]
             });
             return response.status(200).json({ message: "succesfull added...", status: true });
@@ -62,7 +62,9 @@ export const following = async (request, response) => {
 export const getAllFollower = async (request, response) => {
     Follower.find({userId: request.params.userId})
     .populate("followers.friendUserId").then(result=>{
-        return response.status(200).json(result);
+        if(result.length)
+            return response.status(200).json({result,status:true});
+        return response.status(400).json({error : "bad request",status:false});
     }).catch(err=>{
         console.log(err);
         return response.status(500).json({error: "Internal server error"});
@@ -72,7 +74,9 @@ export const getAllFollower = async (request, response) => {
 export const getAllFollowing = async (request, response) => {
     Following.find({userId: request.params.userId})
     .populate("followings.friendUserId").then(result=>{
-        return response.status(200).json(result);
+        if(result.length)
+            return response.status(200).json({result,status:true});
+            return response.status(400).json({error : "bad request",status:false});
     }).catch(err=>{
         console.log(err);
         return response.status(500).json({error: "Internal server error"});
@@ -81,9 +85,11 @@ export const getAllFollowing = async (request, response) => {
 
 export const unFollow = async (request, response) => {
     try {
-        return (await Following.findOne({ userId: request.body.userId, friendUserId: request.body.friendUserId }))
-            ? response.status(200).json({ result: await Following.deleteOne({ friendUserId: request.body.friendUserId }), status: true })
-            : response.status(404).json({ message: "Resource Not found", status: false });
+        let user = await Following.findOne({userId:request.params.userId});
+        let index = user.followings.findIndex((user)=>{return user.friendUserId == request.params.friendUserId});
+        user.followings.splice(index,1);
+        user.save();
+        return response.status(200).json({message:"successfully unfollowed..",status:true});
     } catch (err) {
         console.log(err);
         return response.status(500).json({ result: "internal server error", status: false });
@@ -92,9 +98,11 @@ export const unFollow = async (request, response) => {
 
 export const removeFollower = async (request, response) => {
     try {
-        return (await Follower.findOne({ userId: request.body.userId, friendUserId: request.body.friendUserId }))
-            ? response.status(200).json({ result: await Follower.deleteOne({ friendUserId: request.body.friendUserId }), status: true })
-            : response.status(404).json({ message: "Resource Not found", status: false });
+        let user = await Follower.findOne({userId:request.params.userId});
+        let index = user.followers.findIndex((user)=>{return user.friendUserId == request.params.friendUserId});
+        user.followers.splice(index,1);
+        user.save();
+        return response.status(200).json({message:"successfully removed..",status:true});
     } catch (err) {
         console.log(err);
         return response.status(500).json({ result: "internal server error", status: false });
