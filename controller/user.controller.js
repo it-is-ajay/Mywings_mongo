@@ -141,8 +141,6 @@ export const signUp = async (request, response) => {
         return response.status(500).json({ error: "Internal Server Error", status: false });
     }
 }
-<<<<<<< HEAD
-=======
 
 export const uploadPost = (request, response) => {
     request.body.date = new Date().toString().substring(4, 15).replaceAll(' ', '/');
@@ -166,4 +164,3 @@ export const getAllPost = async (request, response) => {
     }
 
 }
->>>>>>> master

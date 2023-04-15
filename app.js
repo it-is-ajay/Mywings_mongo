@@ -1,15 +1,9 @@
 import mongoose from "mongoose";
-<<<<<<< HEAD
 import bodyParser from "body-parser";
 import express from "express";
 import userRoute from "./routes/user.route.js";
 import adminRoute from "./routes/admin.route.js";
 import postRoute from "./routes/post.route.js";
-=======
-import UserRouter from "./routes/user.route.js"
-import AdminRouter from "./routes/admin.routes.js"
-
->>>>>>> master
 const app = express();
 app.use(bodyParser.json());
 
@@ -22,7 +16,6 @@ mongoose.connect(url)
         app.use("/admin", adminRoute);
         app.use("/post", postRoute);
 
-<<<<<<< HEAD
         app.listen(3000, () => {
             console.log("server started...");
         })
@@ -30,12 +23,3 @@ mongoose.connect(url)
     .catch(err => {
         console.log(err);
     })
-=======
-app.use("/user",UserRouter);
-// app.use("/post");
-app.use("/admin",AdminRouter);
-
-app.listen(3000,()=>{
-    console.log("Server started...");
-})
->>>>>>> master
