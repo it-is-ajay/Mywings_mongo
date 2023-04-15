@@ -103,7 +103,7 @@ export const commentPost = async (request, response, next) => {
     }
 }
 
-export const savePost = async (request, response, next) => {
+export const savePost = async (request, response, next) => { 
     try {
         let postFound = await Post.findOne({ postId: request.body.postId });
         if (postFound) {
