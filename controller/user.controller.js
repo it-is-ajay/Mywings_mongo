@@ -3,10 +3,7 @@ import { Follower } from "../model/follower.model.js";
 import { Following } from "../model/following.model.js";
 import { Help } from "../model/help.model.js";
 import { Post } from "../model/user.post.model.js";
-
-import { response } from "express";
 import { transporter } from "../model/email.js";
-
 import { Collabration } from "../model/collaboration.model.js";
 
 export const help = async (request, response) => {
@@ -180,22 +177,8 @@ export const forgotPassword = async (request, response) => {
     })
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // aagdyeekdzhmkhft
-=======
+
 export const getUserById = async (request, response) => {
     await User.find({ _id: request.params._id })
         .then(result => {
