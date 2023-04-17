@@ -19,7 +19,6 @@ const PostSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
     }, // isse ye pata chelga ki kis user ki post h 
-    
     likeItems: [{
         friendUserId: {
             type: mongoose.Schema.Types.ObjectId,

@@ -2,19 +2,19 @@ import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema({
     userName:{
-        type:STRING,            
+        type:String,            
     },
     email:{
-        type:STRING,                 
+        type:String,                 
     },
     password:{
-        type:STRING,
+        type:String,
     },
     bio:{
-        type:STRING,
+        type:String,
     },
     profilePhoto:{
-        type:STRING,
+        type:String,
     }
 })
 

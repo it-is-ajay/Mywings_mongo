@@ -2,20 +2,20 @@ import mongoose from "mongoose";
 
 const collaborationFormSchema = new mongoose.Schema({
     BusinessFirmName :{
-        type:STRING
+        type:String
     },
     email :{
-        type:STRING,
+        type:String,
         unique:true
     },
     address:{
-        type:STRING
+        type:String
     },
     contactPersonName:{
-        type:STRING
+        type:String
     },
     contact:{
-        type:STRING
+        type:String
     }
 })
 

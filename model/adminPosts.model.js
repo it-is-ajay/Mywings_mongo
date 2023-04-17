@@ -2,17 +2,17 @@ import mongoose from "mongoose";
 
 const adminPostSchema = new mongoose.Schema({
     file: {
-        type: STRING
+        type: String
     },
     caption: {
-        type: STRING
+        type: String
     },
     locationOfYour: {
-        type: STRING,
+        type: String,
         default: "INDORE"
     },
     date: {
-        type: STRING
+        type: String
     },
     adminId: {
         type: mongoose.Schema.Types.ObjectId,

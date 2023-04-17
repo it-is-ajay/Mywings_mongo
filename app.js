@@ -6,12 +6,14 @@ import adminRoute from "./routes/admin.route.js";
 import postRoute from "./routes/post.route.js";
 const app = express();
 app.use(bodyParser.json());
+import cors from "cors";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 const url = "mongodb+srv://kratishah2003:kratishah2003@cluster0.kjp92un.mongodb.net/mywings?retryWrites=true&w=majority";
 
 mongoose.connect(url)
     .then(result => {
+        app.use(cors());
         app.use("/user", userRoute);
         app.use("/admin", adminRoute);
         app.use("/post", postRoute);

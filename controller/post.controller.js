@@ -5,8 +5,11 @@ export const postPage = (request, response, next) => { }
 
 export const getAllPost = (request, response, next) => {
     try {
-        Post.find({ userId: request.body.userId })
-        .then((result) => { return response.status(200).json({ message: "data found", result: result, status: true }) })
+        
+        Post.find()
+            .then((result) => {
+                return response.status(200).json({ message: "data found", result: result, status: true })
+            })
     } catch (error) {
         return response.status(500).json({ error: "internal server error", status: true });
     }
@@ -14,6 +17,7 @@ export const getAllPost = (request, response, next) => {
 
 export const uploadPost = async (request, response) => {
     try {
+        request.body.isLiked=false;
         Post.create(request.body)
         return response.status(200).json({ message: "post uploaded by user ", status: true });
     } catch (err) {
@@ -54,6 +58,7 @@ export const getAllComments = (request, response, next) => {
     }
 }
 
+
 export const likePost = async (request, response, next) => {
     try {
         let postFound = await Post.findOne({ _id: request.body.postId });
@@ -62,7 +67,7 @@ export const likePost = async (request, response, next) => {
                 let index = postFound.likeItems.findIndex((user) => { return user.friendUserId == request.body.friendUserId });
                 postFound.likeItems.splice(index, 1);
                 await postFound.save();
-                return response.status(200).json({ message: " you unliked the post", status: true })
+                return response.status(200).json({ message: " you unliked the post", status: false })
             } else {
                 postFound.likeItems.push({ friendUserId: request.body.friendUserId });
                 await postFound.save();
@@ -91,22 +96,23 @@ export const commentPost = async (request, response, next) => {
 
 export const savePost = async (request, response, next) => {
     try {
-        let postFound = await Post.findOne({ postId: request.body.postId });
+        let postFound = await Post.findOne({ _id: request.body.postId });
         if (postFound) {
-            if (postFound.saveItems.some((item) => item.userId == request.body.userId)) {
-                let index = postFound.saveItems.findIndex((user) => { return user.friendUserId == request.body.friendUserId });
+            if (postFound.saveItems.some((item) => item.friendUserId == request.body.friendUserId)) {
+                let index = postFound.saveItems.findIndex((user) => 
+                { return user.friendUserId == request.body.friendUserId });
                 postFound.saveItems.splice(index, 1);
                 await postFound.save();
                 return response.status(200).json({ message: " you unsaved the post", status: true })
             }
             else {
-                postFound.saveItems.push({ userId: request.body.userId });
+                postFound.saveItems.push({ friendUserId: request.body.friendUserId });
                 let savedPost = await postFound.save();
                 return response.status(200).json({ message: "save the post", status: true })
             }
         }
         else {
-            await Post.create({ postId: request.body.postId, saveItems: [{ userId: request.body.userId }] });
+            await Post.create({ postId: request.body.postId, saveItems: [{ friendUserId: request.body.friendUserId }] });
         }
     }
     catch (err) {
