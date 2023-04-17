@@ -8,7 +8,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
-const url = "mongodb+srv://SachinTomar:SachinTomar@cluster0.kl7aicw.mongodb.net/mywings?retryWrites=true&w=majority";
+const url = "mongodb+srv://itsAjay:Ajey4321@cluster0.p5bdwqq.mongodb.net/my-wings?retryWrites=true&w=majority";
+
 mongoose.connect(url)
 .then(result=>{
     console.log("Database connected...");
@@ -22,4 +23,4 @@ app.use("/admin",AdminRouter);
 
 app.listen(3000,()=>{
     console.log("Server started...");
-})
+});
