@@ -1,5 +1,5 @@
 import express from "express"
-import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow} from "../controller/user.controller.js"
+import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, forgotPassword} from "../controller/user.controller.js"
 const router = express.Router();
 
 router.post("/help",help);
@@ -18,7 +18,7 @@ router.post("/signUp",signUp);                      //done
 // router.get("/getAllComment/:postId",getAllComment);    //done
 // router.get("/intrusted",intrusted)
 
-
+router.get("/forgotPassword",forgotPassword);
 
 
 
