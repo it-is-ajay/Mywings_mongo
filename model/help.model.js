@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const helpSchema = new mongoose.Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "user"
     },
     problem:{
         type:String,
@@ -12,4 +12,4 @@ const helpSchema = new mongoose.Schema({
     }
 })
 
-export const Help = mongoose.model("Help",helpSchema); 
+export const Help = mongoose.model("help",helpSchema); 

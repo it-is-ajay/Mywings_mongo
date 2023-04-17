@@ -1,26 +1,27 @@
-import express from "express";
-import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import UserRouter from "./routes/user.route.js"
-import AdminRouter from "./routes/admin.routes.js"
-
+import bodyParser from "body-parser";
+import express from "express";
+import userRoute from "./routes/user.route.js";
+import adminRoute from "./routes/admin.route.js";
+import postRoute from "./routes/post.route.js";
 const app = express();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended : true}));
+import cors from "cors";
 
-const url = "mongodb+srv://itsAjay:Ajey4321@cluster0.p5bdwqq.mongodb.net/my-wings?retryWrites=true&w=majority";
+app.use(bodyParser.urlencoded({ extended: true }));
+const url = "mongodb+srv://kratishah2003:kratishah2003@cluster0.kjp92un.mongodb.net/mywings?retryWrites=true&w=majority";
 
 mongoose.connect(url)
-.then(result=>{
-    console.log("Database connected...");
-}).catch(err=>{
-    console.log(err);
-})
+    .then(result => {
+        app.use(cors());
+        app.use("/user", userRoute);
+        app.use("/admin", adminRoute);
+        app.use("/post", postRoute);
 
-app.use("/user",UserRouter);
-// app.use("/post");
-app.use("/admin",AdminRouter);
-
-app.listen(3000,()=>{
-    console.log("Server started...");
-});
+        app.listen(3000, () => {
+            console.log("server started...");
+        })
+    })
+    .catch(err => {
+        console.log(err);
+    })
