@@ -5,6 +5,11 @@ import { Help } from "../model/help.model.js";
 import { Post } from "../model/post.model.js";
 import bcrypt from "bcryptjs";
 
+import { response } from "express";
+import { transporter } from "../model/email.js";
+
+import { Collabration } from "../model/collaboration.model.js";
+
 export const help = async (request, response) => {
     try {
         return response.status(200).json({ result: await new Help(request.body).save(), status: true });
@@ -68,7 +73,7 @@ export const getAllFollower = async (request, response) => {
             return response.status(400).json({ error: "bad request", status: false });
         }).catch(err => {
             console.log(err);
-            return response.status(500).json({ error: "Internal server error" });
+            return response.status(500).json({ error: "Internal server error", status: false });
         })
 }
 
@@ -80,7 +85,7 @@ export const getAllFollowing = async (request, response) => {
             return response.status(400).json({ error: "bad request", status: false });
         }).catch(err => {
             console.log(err);
-            return response.status(500).json({ error: "Internal server error" });
+            return response.status(500).json({ error: "Internal server error", status: false });
         })
 }
 
@@ -197,4 +202,106 @@ export const getAllPost = async (request, response) => {
         return response.status(500).json({ message: "internal server errore", status: false })
     }
 
+}
+
+
+export const forgotPassword = async (request, response) => {
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const mailOptions = {
+        from: "ajey6162@gmail.com",
+        to: "patelshivani3008@gmail.com",
+        subject: "OTP code",
+        text: ""+otp
+    }
+    transporter.sendMail(mailOptions,(error,info)=>{
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ message: 'Error sending OTP code' });
+          } else {
+            console.log('OTP sent:', info.response);
+            return response.status(200).json({ message: 'OTP code sent successfully' });
+          }
+    })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// aagdyeekdzhmkhft
+=======
+export const getUserById = async (request, response) => {
+    await User.find({ _id: request.params._id })
+        .then(result => {
+            if(!result.length == 0)
+                return response.status(200).json({ user: result, status: true });
+                return response.status(500).json({error:"user not found",status:false});
+        })
+        .catch(err => {
+            return response.status(500).json({ error: "Internal server error", status: false });
+        });
+}
+
+export const getUserByArt = async (request, response) => {
+    await User.find({ art: request.params.art })
+        .then(result => {
+            if(!result.length == 0)
+                return response.status(200).json({ user: result, status: true });
+                return response.status(500).json({error:"user not found",status:false});
+        })
+        .catch(err => {
+            console.log(err);
+            return response.status(500).json({ error: "Internal server error", status: false });
+        });
+}
+
+export const updateProfileById = async (request, response) => {
+    try {
+        await User.updateOne({ _id: request.body.id }, request.body);      
+        return response.status(200).json({ message: "user was updated", status: true });
+    } catch (err) {
+        return response.status(500).json({ err: "Internal server error", status: false });
+    }
+}
+
+export const uploadProfile = async (request, response) => {
+    try {
+        const updatedUser = await User.findOneAndUpdate({ _id: request.body.id },
+            {
+                profilePhoto: request.body.profilePhoto
+            }, { new: true});
+        return response.status(200).json({ user: updatedUser, status: true });
+    } catch (err) {
+        return response.status(500).json({ error: "Internal server error", status: false });
+    }
+};
+
+export const getCollabrationDetails = async (request, response) => {
+    await Collabration.create(request.body)
+        .then(result => {
+            return response.status(200).json({ message: "Collabration success", status: true });
+        })
+        .catch(err => {
+            return response.status(500).json({ error: "Internal server error", status: false });
+        })
+}
+export const CollabrationCancel = async (request,response)=>{
+    await Collabration.findOneAndRemove({_id:request.params._id})
+    .then(result=>{
+        return response.status(200).json({message:"Collabration cancel",status:true});
+    })
+    .catch(err=>{
+        console.log(err);
+        return response.status(500).json({err:"Internal server error",status:false});
+    })
 }

@@ -1,63 +1,85 @@
-import { Admin } from "../model/admin.model.js";
+import { response } from "express";
+import { AdminPosts } from "../model/admin.post.model.js";
 import { User } from "../model/user.model.js";
-import { Collaboration } from "../model/collaborationWith.model.js";
-import { CollaborationForm } from "../model/collaborationForm.model.js";
-import { AdminPost } from "../model/adminPosts.model.js";
+import { Admin } from "../model/admin.model.js";
+
 
 export const editProfile = async (request, response, next) => {
     try {
-        let admin = await Admin.updateOne({ id: request.params.adminId },{$set : {bio: request.body.bio,
-            profilePhoto: request.body.profilePhoto },
+        let admin = await Admin.updateOne({ _id: request.body.id }, {
+            $set: {
+                bio: request.body.bio,
+                profilePhoto: request.body.profilePhoto                
+            }
         })
-            .then(result => { return result.dataValues });
         return response.status(200).json({ message: " Profile updated ... ", status: true })
     } catch (err) {
-        console.log(err);
+        return response.status(500).json({ message: " Profile updated failed ... ", status: false })
     }
 }
 
-export const uploadPostSubmit = async (request,response,next)=>{
-    
-}
-export const viewUsers = async (request, response, next) => {
-    try {
-        let user = await User.find();
-        return response.status(200).json({ allUsers: user, status: true });
-    }
-    catch (err) {
-        return response.status(500).json({ error: "Internal server error", status: false });
-    }
+export const viewUsers = (request, response, next) => {
+    User.find().then(result => { return response.status(200).json({ allUsers: result, status: true }) })
+        .catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
 }
 
 export const deletePost = (request, response, next) => {
-    let adminPostId = request.params.adminPostId;
-    AdminPost.destroy({id: adminPostId }).then(result => {
+    AdminPosts.findOneAndRemove({ _id: request.params.adminPostId }).then(result => {
         return response.status(200).json({ message: "Post removed", status: true });
     }).catch(err => {
         return response.status(500).json({ error: "Internal Server Error", status: false });
     })
 }
 
-export const seeRequestForm = async (request, response, next) => {
+export const viewSelectedContestants = (request, response, next) => {
+    AdminPosts.findById({ _id: request.params.postId }).populate("selectedContestants.selectedContestantsUserId")
+        .then((result) => {
+            return response.status(200).json({ viewSelectedContestants: result.selectedContestants, status: true, message: "data fatched" });
+        }).catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
+}
+
+export const viewInterestedContestants = (request, response, next) => {
+    let status = AdminPosts.findById({ _id: request.params.postId }).populate("interestedContestants.interestedContestantsUserId")
+        .then((result) => {
+            return response.status(200).json({ viewInterestedContestants: result.interestedContestants, status: true, message: "data fatched" });
+        }).catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
+}
+
+
+export const interestedContestants = async (request, response) => {
     try {
-        let form = await CollaborationForm.find();
-        return response.status(200).json({ collaborationForm: form, status: true });
+        let post = await AdminPosts.findOne({ _id: request.params.postId });
+        if (post) {
+            if (post.interestedContestants.some((item) => item.interestedContestantsUserId == request.params.userId))
+                return response.status(200).json({ message: "already Interested shown...", status: true });
+            post.interestedContestants.push({ interestedContestantsUserId: request.params.userId });
+            let savePost = await post.save();
+            return response.status(200).json({ message: "successfull added...", status: true });
+        }
     }
     catch (err) {
+        console.log(err);
         return response.status(500).json({ error: "Internal Server Error", status: false });
     }
 }
 
-export const viewSelectedContestants = async (request, response, next) => {
+export const selectedContestants = async (request, response) => {
     try {
-        let viewSelectedContestants = await viewSelectedContestant.findAll();
-        return response.status(200).json({ viewSelectedContestants: viewSelectedContestants, status: true });
+        let post = await AdminPosts.findById({ _id: request.params.postId });
+        if (post) {
+            if (post.selectedContestants.some((item) => item.selectedContestantsUserId == request.params.userId))
+                return response.status(200).json({ message: "already selected...", status: true });            
+            post.selectedContestants.push({ selectedContestantsUserId: request.params.userId });
+            let saveSelectedContastants = await post.save();
+            return response.status(200).json({ message: " selected successfull added...", status: true });
+        }
     }
     catch (err) {
         console.log(err);
-        return response.status(500).json({ error: "Internal server error", status: false });
+        return response.status(500).json({ error: "Internal Server Error", status: false });
     }
 }
+
 
 export const signUp = async (request, response) => {
     try {
@@ -84,7 +106,7 @@ export const banUser = async (request, response) => {
         return response.status(400).json({ error: "not ban try again" })
     } catch (err) {
         console.log(err);
-        return response.status(500).json({ errore: "internal server errore" })
+        return response.status(500).json({ errore: "internal server errore" ,status:false})
     }
 }
 
@@ -95,7 +117,7 @@ export const getBanUser = async (request, response) => {
             return response.status(200).json({ message: "no any ban user found" })
         return response.status(200).json({ bannedUser: banUser })
     } catch (err) {
-        return response.status(500).json({ errore: "internal server errore" });
+        return response.status(500).json({ errore: "internal server errore" ,status:false});
     }
 
 }
