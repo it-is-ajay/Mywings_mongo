@@ -1,41 +1,24 @@
 import express from "express";
-// import {uploadPostSubmit,editProfile,viewUsers,viewAllPosts,seeBooking,confirmBooking,deletePost,seeRequestForm,viewInterestedContestantsAccept,sendRequest,viewInterestedContestants,viewSelectedContestants, interestedContestants, signIn, signOut, saveAdminPost, spamUser, viewSpam} from "../controller/admin.controller.js"; 
+import { viewUsers,editProfile,selectedContestants,deletePost,viewInterestedContestants,viewSelectedContestants, interestedContestants, banUser,getBanUser,signUp,adminPost,unBanUser,viewSpam } from "../controller/admin.controller.js";
 
-const router = express.Router();
-import { banUser,getBanUser,signUp,adminPost,unBanUser,viewSpam } from "../controller/admin.controller.js";
+const router =express.Router();
 router.post("/banUser",banUser)
 router.get("/getBanUser",getBanUser)
 router.get("/unBanUser",unBanUser)    
-router.get("/viewSpam",viewSpam)     
-router.post("/signUp",signUp)         
-router.post("/uploadPost",adminPost)  
+router.get("/viewSpam",viewSpam)      //done
+router.post("/signUp",signUp)         //done
+router.post("/uploadPost",adminPost)  //done
 
-// router.post("/uploadPost/submit",uploadPostSubmit)
 
-// router.post("/editProfile/:adminId",editProfile);
+router.post("/editProfile",editProfile);
+router.get("/viewUsers",viewUsers);
+router.get("/interestedContestants/:postId/:userId",interestedContestants);
+router.get("/deletePost/:adminPostId",deletePost);
+router.get("/viewInterestedContestants/:postId",viewInterestedContestants);
+router.get("/viewInterestedContestants/accept/:postId/:userId",selectedContestants);
+router.get("/viewSelectedContestants/:postId",viewSelectedContestants);
 
-// router.get("/viewUsers",viewUsers);
 
-// router.get("/viewAllPosts",viewAllPosts);
 
-// router.get("/deletePost/:adminPostId",deletePost);
-
-// router.post("/seeRequestForm",seeRequestForm);
-
-// router.post("/sendRequest",sendRequest);
-
-// router.post("/confirmBooking",confirmBooking);
-// router.get("/seeBooking",seeBooking);
-
-// router.post("/interestedContestants",interestedContestants);
-// router.get("/viewInterestedContestants",viewInterestedContestants);
-// router.post("/viewInterestedContestants/accept",viewInterestedContestantsAccept);
-// router.get("/viewSelectedContestants",viewSelectedContestants);
-
-// router.post("/signIn",signIn);
-// router.post("/signOut",signOut);
-// router.post("/save",saveAdminPost);
-// router.post("/spam",spamUser);
-// router.post("/viewSpam",viewSpam);
 
 export default router;

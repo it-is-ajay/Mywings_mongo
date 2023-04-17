@@ -224,22 +224,6 @@ export const forgotPassword = async (request, response) => {
     })
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// aagdyeekdzhmkhft
-=======
 export const getUserById = async (request, response) => {
     await User.find({ _id: request.params._id })
         .then(result => {
