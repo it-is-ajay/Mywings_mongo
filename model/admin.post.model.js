@@ -1,17 +1,36 @@
 import mongoose from "mongoose";
 
-const AdminPostSchema=new mongoose.Schema({
-    file:String,
-    date:String,
-    caption:String,
-    location:String,
+const adminPostSchema = new mongoose.Schema({
+    file :{
+        type:String,
+        allowNull:false
+    },
+    caption :{
+        type:String
+    },
+    locationOfYour:{
+        type:String,
+        default:"INDORE"
+    },
+    date:{
+        type:String
+    },
     adminId:{
-        type:mongoose.Schema.Types.ObjectId,ref:"admin"},
-        intrusted:[{
-            userId:{type:mongoose.Schema.Types.ObjectId,ref:"user"}}],
-        selected:[{
-           userId:{type:mongoose.Schema.Types.ObjectId,ref:"user"}}]
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"admin"
+    },
+    interestedContestants:[{
+        interestedContestantsUserId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"user"
+        }
+    }],
+    selectedContestants:[{
+        selectedContestantsUserId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"user"
+        }
+    }]
+})
 
-    })
-
-export const AdminPosts=mongoose.model("adminPost",AdminPostSchema);
+export const AdminPosts = mongoose.model("adminPost", adminPostSchema);

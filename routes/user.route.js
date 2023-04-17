@@ -1,5 +1,7 @@
 import express from "express"
-import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, forgotPassword} from "../controller/user.controller.js"
+
+import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt, updateProfileById, uploadProfile, getCollabrationDetails, CollabrationCancel} from "../controller/user.controller.js"
+
 const router = express.Router();
 
 router.post("/help",help);
@@ -18,7 +20,19 @@ router.post("/signUp",signUp);                      //done
 // router.get("/getAllComment/:postId",getAllComment);    //done
 // router.get("/intrusted",intrusted)
 
+
 router.get("/forgotPassword",forgotPassword);
+
+router.get("/searchById/:_id",getUserById);
+router.get("/searchByArt/:art",getUserByArt);
+router.post("/updateDetails",updateProfileById);
+router.get("/viewProfile/:_id",getUserById);
+router.post("/uploadProfile",uploadProfile);
+router.post("/collabrationDetails",getCollabrationDetails);
+router.get("/collabrationCancel/:_id",CollabrationCancel);
+
+
+
 
 
 

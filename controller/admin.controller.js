@@ -3,6 +3,84 @@ import { AdminPosts } from "../model/admin.post.model.js";
 import { User } from "../model/user.model.js";
 import { Admin } from "../model/admin.model.js";
 
+
+export const editProfile = async (request, response, next) => {
+    try {
+        let admin = await Admin.updateOne({ _id: request.body.id }, {
+            $set: {
+                bio: request.body.bio,
+                profilePhoto: request.body.profilePhoto                
+            }
+        })
+        return response.status(200).json({ message: " Profile updated ... ", status: true })
+    } catch (err) {
+        return response.status(500).json({ message: " Profile updated failed ... ", status: false })
+    }
+}
+
+export const viewUsers = (request, response, next) => {
+    User.find().then(result => { return response.status(200).json({ allUsers: result, status: true }) })
+        .catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
+}
+
+export const deletePost = (request, response, next) => {
+    AdminPosts.findOneAndRemove({ _id: request.params.adminPostId }).then(result => {
+        return response.status(200).json({ message: "Post removed", status: true });
+    }).catch(err => {
+        return response.status(500).json({ error: "Internal Server Error", status: false });
+    })
+}
+
+export const viewSelectedContestants = (request, response, next) => {
+    AdminPosts.findById({ _id: request.params.postId }).populate("selectedContestants.selectedContestantsUserId")
+        .then((result) => {
+            return response.status(200).json({ viewSelectedContestants: result.selectedContestants, status: true, message: "data fatched" });
+        }).catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
+}
+
+export const viewInterestedContestants = (request, response, next) => {
+    let status = AdminPosts.findById({ _id: request.params.postId }).populate("interestedContestants.interestedContestantsUserId")
+        .then((result) => {
+            return response.status(200).json({ viewInterestedContestants: result.interestedContestants, status: true, message: "data fatched" });
+        }).catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
+}
+
+
+export const interestedContestants = async (request, response) => {
+    try {
+        let post = await AdminPosts.findOne({ _id: request.params.postId });
+        if (post) {
+            if (post.interestedContestants.some((item) => item.interestedContestantsUserId == request.params.userId))
+                return response.status(200).json({ message: "already Interested shown...", status: true });
+            post.interestedContestants.push({ interestedContestantsUserId: request.params.userId });
+            let savePost = await post.save();
+            return response.status(200).json({ message: "successfull added...", status: true });
+        }
+    }
+    catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "Internal Server Error", status: false });
+    }
+}
+
+export const selectedContestants = async (request, response) => {
+    try {
+        let post = await AdminPosts.findById({ _id: request.params.postId });
+        if (post) {
+            if (post.selectedContestants.some((item) => item.selectedContestantsUserId == request.params.userId))
+                return response.status(200).json({ message: "already selected...", status: true });            
+            post.selectedContestants.push({ selectedContestantsUserId: request.params.userId });
+            let saveSelectedContastants = await post.save();
+            return response.status(200).json({ message: " selected successfull added...", status: true });
+        }
+    }
+    catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "Internal Server Error", status: false });
+    }
+}
+
+
 export const signUp = async (request, response) => {
     try {
         return response.status(200).json({ user: await Admin.create(request.body) });

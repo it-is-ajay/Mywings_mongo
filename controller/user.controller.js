@@ -3,8 +3,11 @@ import { Follower } from "../model/follower.model.js";
 import { Following } from "../model/following.model.js";
 import { Help } from "../model/help.model.js";
 import { Post } from "../model/user.post.model.js";
+
 import { response } from "express";
 import { transporter } from "../model/email.js";
+
+import { Collabration } from "../model/collaboration.model.js";
 
 export const help = async (request, response) => {
     try {
@@ -157,6 +160,7 @@ export const getAllPost = async (request, response) => {
 
 }
 
+
 export const forgotPassword = async (request, response) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
     const mailOptions = {
@@ -191,3 +195,69 @@ export const forgotPassword = async (request, response) => {
 
 
 // aagdyeekdzhmkhft
+=======
+export const getUserById = async (request, response) => {
+    await User.find({ _id: request.params._id })
+        .then(result => {
+            if(!result.length == 0)
+                return response.status(200).json({ user: result, status: true });
+                return response.status(500).json({error:"user not found",status:false});
+        })
+        .catch(err => {
+            return response.status(500).json({ error: "Internal server error", status: false });
+        });
+}
+
+export const getUserByArt = async (request, response) => {
+    await User.find({ art: request.params.art })
+        .then(result => {
+            if(!result.length == 0)
+                return response.status(200).json({ user: result, status: true });
+                return response.status(500).json({error:"user not found",status:false});
+        })
+        .catch(err => {
+            console.log(err);
+            return response.status(500).json({ error: "Internal server error", status: false });
+        });
+}
+
+export const updateProfileById = async (request, response) => {
+    try {
+        await User.updateOne({ _id: request.body.id }, request.body);      
+        return response.status(200).json({ message: "user was updated", status: true });
+    } catch (err) {
+        return response.status(500).json({ err: "Internal server error", status: false });
+    }
+}
+
+export const uploadProfile = async (request, response) => {
+    try {
+        const updatedUser = await User.findOneAndUpdate({ _id: request.body.id },
+            {
+                profilePhoto: request.body.profilePhoto
+            }, { new: true});
+        return response.status(200).json({ user: updatedUser, status: true });
+    } catch (err) {
+        return response.status(500).json({ error: "Internal server error", status: false });
+    }
+};
+
+export const getCollabrationDetails = async (request, response) => {
+    await Collabration.create(request.body)
+        .then(result => {
+            return response.status(200).json({ message: "Collabration success", status: true });
+        })
+        .catch(err => {
+            return response.status(500).json({ error: "Internal server error", status: false });
+        })
+}
+export const CollabrationCancel = async (request,response)=>{
+    await Collabration.findOneAndRemove({_id:request.params._id})
+    .then(result=>{
+        return response.status(200).json({message:"Collabration cancel",status:true});
+    })
+    .catch(err=>{
+        console.log(err);
+        return response.status(500).json({err:"Internal server error",status:false});
+    })
+}
