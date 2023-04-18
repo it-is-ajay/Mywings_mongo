@@ -2,9 +2,11 @@ import { User } from "../model/user.model.js"
 import { Follower } from "../model/follower.model.js";
 import { Following } from "../model/following.model.js";
 import { Help } from "../model/help.model.js";
-import { Post } from "../model/user.post.model.js";
+import { Post } from "../model/post.model.js";
+import bcrypt from "bcryptjs";
 import { transporter } from "../model/email.js";
 import { Collabration } from "../model/collaboration.model.js";
+import { response } from "express";
 
 export const help = async (request, response) => {
     try {
@@ -13,7 +15,6 @@ export const help = async (request, response) => {
         return response.status(500).json({ result: "internal server error", status: false });
     }
 }
-
 export const follower = async (request, response) => {
     try {
         let user = await Follower.findOne({ userId: request.params.userId });
@@ -111,10 +112,12 @@ export const removeFollower = async (request, response) => {
         return response.status(500).json({ result: "internal server error", status: false });
     }
 }
-
-
 export const spam = (request, response) => {
+ 
+    
 
+
+    
 }
 
 export const searchProfileByKeyword = async (request, response) => {
@@ -125,14 +128,58 @@ export const searchProfileByKeyword = async (request, response) => {
     }
 }
 
-export const signUp = async (request, response) => {
-    try {
-        return response.status(200).json({ user: await User.create(request.body) });
-    } catch (err) {
-        console.log(err)
-        return response.status(500).json({ error: "Internal Server Error", status: false });
+
+export const deleteAccount = async (request, response) => {
+    //console.log(request.body.userId);
+    let user = await User.findOne({ _id: request.body.userId })
+    let status = await bcrypt.compare(request.body.password, user.password);
+    if (status) {
+        User.deleteOne({ _id: request.body.userId })
+            .then(result => {
+                return response.status(200).json({ message: "user deleted..", status: true });
+            }).catch(err => {
+                return response.status(500).json({ message: "Internal Server Error", status: false });
+            });
+    }
+    else {
+        return response.status(400).json({ message: "bad request", user: user, status: true })
     }
 }
+
+
+export const signUp = async (request, response, next) => {
+    try {
+        let email = await User.findOne({ email: request.body.email })
+        if (email)
+            return response.status(400).json({ message: "already exist", status: false });
+        let salt = await bcrypt.genSalt(10);
+        request.body.password = await bcrypt.hash(request.body.password, salt);
+        let user = await User.create(request.body)
+        if (user)
+            return response.status(200).json({ message: "sign up success", user: user, status: true })
+        return response.status(400).json({ message: "bad request", user: user, status: true })
+
+    } catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "internal server error", status: false });
+    }
+}
+
+export const signIn = async (request, response, next) => {
+    try {
+        let user = await User.findOne({ email: request.body.email })
+        if (!user)
+            return response.status(400).json({ error: "bad request", status: false })
+        await bcrypt.compare(request.body.password, user.password);
+        return response.status(200).json({ message: "sign in success", status: true })
+
+    }
+    catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "internal server error", status: false });
+    }
+}
+
 
 export const uploadPost = (request, response) => {
     request.body.date = new Date().toString().substring(4, 15).replaceAll(' ', '/');
@@ -175,6 +222,10 @@ export const forgotPassword = async (request, response) => {
             return response.status(200).json({ message: 'OTP code sent successfully' });
           }
     })
+}
+
+export const checkPassword = async(request,response)=>{
+    
 }
 
 // aagdyeekdzhmkhft
