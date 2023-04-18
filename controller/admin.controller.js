@@ -2,6 +2,7 @@ import { response } from "express";
 import { AdminPosts } from "../model/admin.post.model.js";
 import { User } from "../model/user.model.js";
 import { Admin } from "../model/admin.model.js";
+import { Spam } from "../model/spam.model.js";
 
 
 export const editProfile = async (request, response, next) => {
@@ -144,7 +145,7 @@ export const unBanUser = async (request, response) => {
 }
 
 export const viewSpam = (request, response, next) => {
-    SpamUser.find()
+    Spam.find()
         .then(result => {
             return response.status(200).json({ allSpamUser: result, status: true });
         })
