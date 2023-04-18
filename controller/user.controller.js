@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { transporter } from "../model/email.js";
 import { Collabration } from "../model/collaboration.model.js";
 import { response } from "express";
+import { Spam } from "../model/spam.model.js";
 
 export const help = async (request, response) => {
     try {
@@ -113,11 +114,13 @@ export const removeFollower = async (request, response) => {
     }
 }
 export const spam = (request, response) => {
- 
-    
-
-
-    
+    Spam.create(request.body)
+    .then(result=>{
+        return response.status(200).json({result:"user was spam",status:true});
+    })
+   .catch(err=>{
+        return response.status(500).json({err:"Internal server error",status:false});
+    })
 }
 
 export const searchProfileByKeyword = async (request, response) => {
@@ -130,7 +133,6 @@ export const searchProfileByKeyword = async (request, response) => {
 
 
 export const deleteAccount = async (request, response) => {
-    //console.log(request.body.userId);
     let user = await User.findOne({ _id: request.body.userId })
     let status = await bcrypt.compare(request.body.password, user.password);
     if (status) {
@@ -228,7 +230,6 @@ export const checkPassword = async(request,response)=>{
     
 }
 
-// aagdyeekdzhmkhft
 
 export const getUserById = async (request, response) => {
     await User.find({ _id: request.params._id })

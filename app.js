@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 import cors from "cors";
 
 app.use(bodyParser.urlencoded({ extended: true }));
-const url = "mongodb+srv://kratishah2003:kratishah2003@cluster0.kjp92un.mongodb.net/mywings?retryWrites=true&w=majority";
+const url = "mongodb+srv://patelshivani3008:shivani30@cluster0.clvhszv.mongodb.net/my_wings?retryWrites=true&w=majority";
 
 mongoose.connect(url)
     .then(result => {

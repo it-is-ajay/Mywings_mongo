@@ -15,4 +15,4 @@ const spamSchema = mongoose.Schema({
     }
 });
 
-export const Spam = mongoose.model("Spam",spamSchema);
+export const Spam = mongoose.model("spam",spamSchema);
