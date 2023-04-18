@@ -6,11 +6,8 @@ const router = express.Router();
 
 router.get("/postPage",postPage);
 router.post("/uploadPost",uploadPost)
-
 router.post("/like",likePost);
-
 router.get("/getAllPost",getAllPost);
-
 router.post("/getLike",getAllLikes);
 router.get("/getSavedPost",getSavedPost);
 router.post("/getComment",getAllComments);

@@ -4,11 +4,9 @@ import { Following } from "../model/following.model.js";
 import { Help } from "../model/help.model.js";
 import { Post } from "../model/post.model.js";
 import bcrypt from "bcryptjs";
-
-import { response } from "express";
 import { transporter } from "../model/email.js";
-
 import { Collabration } from "../model/collaboration.model.js";
+import { response } from "express";
 
 export const help = async (request, response) => {
     try {
@@ -114,10 +112,12 @@ export const removeFollower = async (request, response) => {
         return response.status(500).json({ result: "internal server error", status: false });
     }
 }
-
-
 export const spam = (request, response) => {
+ 
+    
 
+
+    
 }
 
 export const searchProfileByKeyword = async (request, response) => {
@@ -223,6 +223,12 @@ export const forgotPassword = async (request, response) => {
           }
     })
 }
+
+export const checkPassword = async(request,response)=>{
+    
+}
+
+// aagdyeekdzhmkhft
 
 export const getUserById = async (request, response) => {
     await User.find({ _id: request.params._id })

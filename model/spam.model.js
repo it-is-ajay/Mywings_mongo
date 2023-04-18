@@ -8,6 +8,10 @@ const spamSchema = mongoose.Schema({
     postId:{
         type:mongoose.Schema.Types.ObjectId,
         ref: "Post"
+    },
+    reason:{
+        type:String,
+        require:true
     }
 });
 
