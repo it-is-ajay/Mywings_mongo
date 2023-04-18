@@ -2,8 +2,12 @@ import { User } from "../model/user.model.js"
 import { Follower } from "../model/follower.model.js";
 import { Following } from "../model/following.model.js";
 import { Help } from "../model/help.model.js";
-import { Post } from "../model/user.post.model.js";
+import { Post } from "../model/post.model.js";
+import bcrypt from "bcryptjs";
+import { transporter } from "../model/email.js";
 import { Collabration } from "../model/collaboration.model.js";
+import { response } from "express";
+import {validationResult} from "express-validator";
 
 export const help = async (request, response) => {
     try {
@@ -12,20 +16,19 @@ export const help = async (request, response) => {
         return response.status(500).json({ result: "internal server error", status: false });
     }
 }
-
 export const follower = async (request, response) => {
     try {
         let user = await Follower.findOne({ userId: request.params.userId });
         if (user) {
             if (user.followers.some((follower) => follower.friendUserId == request.params.friendUserId))
                 return response.status(200).json({ message: "already followed...", status: true });
-             user.followers.push({ friendUserId: request.params.friendUserId });
+            user.followers.push({ friendUserId: request.params.friendUserId });
             let savedCart = await user.save();
             return response.status(200).json({ message: "successfull added...", status: true });
         }
         else {
             let saved = await Follower.create({
-                 userId: request.params.userId,
+                userId: request.params.userId,
                 followers: [{ friendUserId: request.params.friendUserId }]
             });
             return response.status(200).json({ message: "succesfull added...", status: true });
@@ -43,7 +46,7 @@ export const following = async (request, response) => {
         if (user) {
             if (user.followings.some((following) => following.friendUserId == request.params.friendUserId))
                 return response.status(200).json({ message: "already followed...", status: true });
-             user.followings.push({ friendUserId: request.params.friendUserId });
+            user.followings.push({ friendUserId: request.params.friendUserId });
             let savedCart = await user.save();
             return response.status(200).json({ message: "successfull added...", status: true });
         }
@@ -62,36 +65,36 @@ export const following = async (request, response) => {
 }
 
 export const getAllFollower = async (request, response) => {
-    Follower.find({userId: request.params.userId})
-    .populate("followers.friendUserId").then(result=>{
-        if(result.length)
-            return response.status(200).json({result,status:true});
-        return response.status(400).json({error : "bad request",status:false});
-    }).catch(err=>{
-        console.log(err);
-        return response.status(500).json({error: "Internal server error"});
-    })
+    Follower.find({ userId: request.params.userId })
+        .populate("followers.friendUserId").then(result => {
+            if (result.length)
+                return response.status(200).json({ result, status: true });
+            return response.status(400).json({ error: "bad request", status: false });
+        }).catch(err => {
+            console.log(err);
+            return response.status(500).json({ error: "Internal server error", status: false });
+        })
 }
 
 export const getAllFollowing = async (request, response) => {
-    Following.find({userId: request.params.userId})
-    .populate("followings.friendUserId").then(result=>{
-        if(result.length)
-            return response.status(200).json({result,status:true});
-            return response.status(400).json({error : "bad request",status:false});
-    }).catch(err=>{
-        console.log(err);
-        return response.status(500).json({error: "Internal server error"});
-    })
+    Following.find({ userId: request.params.userId })
+        .populate("followings.friendUserId").then(result => {
+            if (result.length)
+                return response.status(200).json({ result, status: true });
+            return response.status(400).json({ error: "bad request", status: false });
+        }).catch(err => {
+            console.log(err);
+            return response.status(500).json({ error: "Internal server error", status: false });
+        })
 }
 
 export const unFollow = async (request, response) => {
     try {
-        let user = await Following.findOne({userId:request.params.userId});
-        let index = user.followings.findIndex((user)=>{return user.friendUserId == request.params.friendUserId});
-        user.followings.splice(index,1);
+        let user = await Following.findOne({ userId: request.params.userId });
+        let index = user.followings.findIndex((user) => { return user.friendUserId == request.params.friendUserId });
+        user.followings.splice(index, 1);
         user.save();
-        return response.status(200).json({message:"successfully unfollowed..",status:true});
+        return response.status(200).json({ message: "successfully unfollowed..", status: true });
     } catch (err) {
         console.log(err);
         return response.status(500).json({ result: "internal server error", status: false });
@@ -100,20 +103,22 @@ export const unFollow = async (request, response) => {
 
 export const removeFollower = async (request, response) => {
     try {
-        let user = await Follower.findOne({userId:request.params.userId});
-        let index = user.followers.findIndex((user)=>{return user.friendUserId == request.params.friendUserId});
-        user.followers.splice(index,1);
+        let user = await Follower.findOne({ userId: request.params.userId });
+        let index = user.followers.findIndex((user) => { return user.friendUserId == request.params.friendUserId });
+        user.followers.splice(index, 1);
         user.save();
-        return response.status(200).json({message:"successfully removed..",status:true});
+        return response.status(200).json({ message: "successfully removed..", status: true });
     } catch (err) {
         console.log(err);
         return response.status(500).json({ result: "internal server error", status: false });
     }
 }
+export const spam = (request, response) => {
+ 
+    
 
 
-export const spam = (request,response)=>{
-
+    
 }
 
 export const searchProfileByKeyword = async (request, response) => {
@@ -124,14 +129,61 @@ export const searchProfileByKeyword = async (request, response) => {
     }
 }
 
-export const signUp = async (request, response) => {
-    try {
-        return response.status(200).json({ user: await User.create(request.body) });
-    } catch (err) {
-        console.log(err)
-        return response.status(500).json({ error: "Internal Server Error", status: false });
+
+export const deleteAccount = async (request, response) => {
+    //console.log(request.body.userId);
+    let user = await User.findOne({ _id: request.body.userId })
+    let status = await bcrypt.compare(request.body.password, user.password);
+    if (status) {
+        User.deleteOne({ _id: request.body.userId })
+            .then(result => {
+                return response.status(200).json({ message: "user deleted..", status: true });
+            }).catch(err => {
+                return response.status(500).json({ message: "Internal Server Error", status: false });
+            });
+    }
+    else {
+        return response.status(400).json({ message: "bad request", user: user, status: true })
     }
 }
+
+
+export const signUp = async (request, response, next) => {
+    try {
+        let error = validationResult(request);
+        if(!error.isEmpty())
+            return response.status(400).json({ error: "bad request", status: false,message:error.array()});
+        let email = await User.findOne({ email: request.body.email })
+        if (email)
+            return response.status(400).json({ message: "already exist", status: false });
+        let salt = await bcrypt.genSalt(10);
+        request.body.password = await bcrypt.hash(request.body.password, salt);
+        let user = await User.create(request.body)
+        if (user)
+            return response.status(200).json({ message: "sign up success", user: user, status: true })
+        return response.status(400).json({ message: "bad request", user: user, status: true })
+
+    } catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "internal server error", status: false });
+    }
+}
+
+export const signIn = async (request, response, next) => {
+    try {
+        let user = await User.findOne({ email: request.body.email })
+        if (!user)
+            return response.status(400).json({ error: "bad request", status: false })
+        await bcrypt.compare(request.body.password, user.password);
+        return response.status(200).json({ message: "sign in success", status: true })
+
+    }
+    catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "internal server error", status: false });
+    }
+}
+
 
 export const uploadPost = (request, response) => {
     request.body.date = new Date().toString().substring(4, 15).replaceAll(' ', '/');
@@ -147,14 +199,41 @@ export const getAllPost = async (request, response) => {
         let post = await Post.find({ userId: request.params.userId });
         if (post)
             return response.status(200).json({ message: "data found", result: post, status: true })
-            return response.status(500).json({ message: "post not found", status: false })
+        return response.status(500).json({ message: "post not found", status: false })
 
-        } catch (err) {
+    } catch (err) {
         console.log(err)
         return response.status(500).json({ message: "internal server errore", status: false })
     }
 
 }
+
+
+export const forgotPassword = async (request, response) => {
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const mailOptions = {
+        from: "ajey6162@gmail.com",
+        to: "patelshivani3008@gmail.com",
+        subject: "OTP code",
+        text: ""+otp
+    }
+    transporter.sendMail(mailOptions,(error,info)=>{
+        if (error) {
+            console.error(error);
+            return response.status(500).json({ message: 'Error sending OTP code' });
+          } else {
+            console.log('OTP sent:', info.response);
+            return response.status(200).json({ message: 'OTP code sent successfully' });
+          }
+    })
+}
+
+export const checkPassword = async(request,response)=>{
+    
+}
+
+// aagdyeekdzhmkhft
+
 export const getUserById = async (request, response) => {
     await User.find({ _id: request.params._id })
         .then(result => {

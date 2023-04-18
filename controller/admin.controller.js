@@ -3,6 +3,7 @@ import { AdminPosts } from "../model/admin.post.model.js";
 import { User } from "../model/user.model.js";
 import { Admin } from "../model/admin.model.js";
 
+
 export const editProfile = async (request, response, next) => {
     try {
         let admin = await Admin.updateOne({ _id: request.body.id }, {
@@ -115,7 +116,7 @@ export const banUser = async (request, response) => {
         return response.status(400).json({ error: "not ban try again" })
     } catch (err) {
         console.log(err);
-        return response.status(500).json({ errore: "internal server errore" })
+        return response.status(500).json({ errore: "internal server errore" ,status:false})
     }
 }
 
@@ -126,7 +127,7 @@ export const getBanUser = async (request, response) => {
             return response.status(200).json({ message: "no any ban user found" })
         return response.status(200).json({ bannedUser: banUser })
     } catch (err) {
-        return response.status(500).json({ errore: "internal server errore" });
+        return response.status(500).json({ errore: "internal server errore" ,status:false});
     }
 
 }

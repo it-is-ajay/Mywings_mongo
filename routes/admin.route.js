@@ -5,13 +5,11 @@ const router =express.Router();
 router.post("/banUser",banUser)
 router.get("/getBanUser",getBanUser)
 router.get("/unBanUser",unBanUser)    
-router.get("/viewSpam",viewSpam)      //done
-router.post("/signUp",signUp)         //done
-router.post("/uploadPost",adminPost)  //done
-
-
+router.get("/viewSpam",viewSpam)       
+router.post("/uploadPost",adminPost)  
 router.post("/editProfile",editProfile);
 router.get("/viewUsers",viewUsers);
+router.get("/deletePost",deletePost);
 router.get("/interestedContestants/:postId/:userId",interestedContestants);
 router.get("/deletePost/:adminPostId",deletePost);
 router.get("/viewInterestedContestants/:postId",viewInterestedContestants);
@@ -20,6 +18,7 @@ router.get("/viewSelectedContestants/:postId",viewSelectedContestants);
 router.get("/removeFromSelectedContestants/:userId",removeFromSelectedContestants);
 
 
-
+ 
+router.post("/signUp",signUp)       
 
 export default router;
