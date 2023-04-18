@@ -1,5 +1,5 @@
 import express from "express";
-import { viewUsers,editProfile,selectedContestants,deletePost,viewInterestedContestants,viewSelectedContestants, interestedContestants, banUser,getBanUser,signUp,adminPost,unBanUser,viewSpam } from "../controller/admin.controller.js";
+import { viewUsers,editProfile,selectedContestants,removeFromSelectedContestants,deletePost,viewInterestedContestants,viewSelectedContestants, interestedContestants, banUser,getBanUser,signUp,adminPost,unBanUser,viewSpam } from "../controller/admin.controller.js";
 
 const router =express.Router();
 router.post("/banUser",banUser)
@@ -17,6 +17,7 @@ router.get("/deletePost/:adminPostId",deletePost);
 router.get("/viewInterestedContestants/:postId",viewInterestedContestants);
 router.get("/viewInterestedContestants/accept/:postId/:userId",selectedContestants);
 router.get("/viewSelectedContestants/:postId",viewSelectedContestants);
+router.get("/removeFromSelectedContestants/:userId",removeFromSelectedContestants);
 
 
 
