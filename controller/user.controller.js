@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { transporter } from "../model/email.js";
 import { Collabration } from "../model/collaboration.model.js";
 import { response } from "express";
+import {validationResult} from "express-validator";
 
 export const help = async (request, response) => {
     try {
@@ -149,6 +150,9 @@ export const deleteAccount = async (request, response) => {
 
 export const signUp = async (request, response, next) => {
     try {
+        let error = validationResult(request);
+        if(!error.isEmpty())
+            return response.status(400).json({ error: "bad request", status: false,message:error.array()});
         let email = await User.findOne({ email: request.body.email })
         if (email)
             return response.status(400).json({ message: "already exist", status: false });

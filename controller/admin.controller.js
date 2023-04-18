@@ -80,6 +80,16 @@ export const selectedContestants = async (request, response) => {
     }
 }
 
+export const removeFromSelectedContestants = async (request,response,next)=>{
+    try{
+        AdminPosts.findByIdAndRemove({_id:request.params.userId})
+        .then(result=>{return response.status(200).json({message:"id is removed",status:true})})
+        .catch(err=>{return response.status(200).json({message:"something went wrong",status:false})})
+    }catch(err){
+        console.log(err)
+        return response.status(500).json({error:"Internal server error",status:false});
+    }
+}
 
 export const signUp = async (request, response) => {
     try {
