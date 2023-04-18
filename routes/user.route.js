@@ -21,27 +21,25 @@ router.post("/collabrationDetails",getCollabrationDetails);
 router.get("/collabrationCancel/:_id",CollabrationCancel);
 router.post("/editProfile/updateDetails",updateProfileById);
 router.post("/editProfile/setting/deleteAccount",deleteAccount);
-router.post("/editProfile/setting/help",help)
-
-router.post("/signUp",signUp);                      
-router.post("/uploadPost",uploadPost);               
-
-
-
-router.get("/forgotPassword",forgotPassword);
-
-
-
-
-
-
-
-
-
+router.post("/editProfile/setting/help",help);           
+router.post("/signUp",
+    body("name", "name is required").notEmpty().isAlpha(),
+    body("userName").notEmpty(),
+    body("password").notEmpty().isStrongPassword({
+        minLength:8,
+        minLowercase:1,
+        minUppercase:1,
+        minNumbers:1,
+        minLength:6
+    }).withMessage("password must contain upercase,lowercase,number"),
+    body("contact").isNumeric(),
+    body("email").isEmail()
+,signUp);                      
+router.post("/uploadPost",uploadPost);
 
 
-
+router.get("/forgotPassword", forgotPassword);
 
 
 export default router;
- 
+
