@@ -7,7 +7,12 @@ import bcrypt from "bcryptjs";
 import { transporter } from "../model/email.js";
 import { Collabration } from "../model/collaboration.model.js";
 import { response } from "express";
+<<<<<<< HEAD
 import jwt from "jsonwebtoken";
+=======
+import { Spam } from "../model/spam.model.js";
+import {validationResult} from "express-validator";
+>>>>>>> c6180a9da683279b5cf0d5b8cbd37e00598448e0
 
 export const help = async (request, response) => {
     try {
@@ -114,11 +119,21 @@ export const removeFollower = async (request, response) => {
     }
 }
 export const spam = (request, response) => {
+<<<<<<< HEAD
 
 
 
 
 
+=======
+    Spam.create(request.body)
+    .then(result=>{
+        return response.status(200).json({result:"user was spam",status:true});
+    })
+   .catch(err=>{
+        return response.status(500).json({err:"Internal server error",status:false});
+    })
+>>>>>>> c6180a9da683279b5cf0d5b8cbd37e00598448e0
 }
 
 export const searchProfileByKeyword = async (request, response) => {
@@ -131,7 +146,6 @@ export const searchProfileByKeyword = async (request, response) => {
 
 
 export const deleteAccount = async (request, response) => {
-    //console.log(request.body.userId);
     let user = await User.findOne({ _id: request.body.userId })
     let status = await bcrypt.compare(request.body.password, user.password);
     if (status) {
@@ -150,6 +164,9 @@ export const deleteAccount = async (request, response) => {
 
 export const signUp = async (request, response, next) => {
     try {
+        let error = validationResult(request);
+        if(!error.isEmpty())
+            return response.status(400).json({ error: "bad request", status: false,message:error.array()});
         let email = await User.findOne({ email: request.body.email })
         if (email)
             return response.status(400).json({ message: "already exist", status: false });
@@ -231,7 +248,6 @@ export const forgotPassword = async (request, response) => {
 }
 
 
-// aagdyeekdzhmkhft
 
 export const getUserById = async (request, response) => {
     await User.find({ _id: request.params._id })

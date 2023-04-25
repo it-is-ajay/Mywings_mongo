@@ -2,6 +2,7 @@ import { response } from "express";
 import { AdminPosts } from "../model/admin.post.model.js";
 import { User } from "../model/user.model.js";
 import { Admin } from "../model/admin.model.js";
+import { Spam } from "../model/spam.model.js";
 
 
 export const editProfile = async (request, response, next) => {
@@ -80,6 +81,16 @@ export const selectedContestants = async (request, response) => {
     }
 }
 
+export const removeFromSelectedContestants = async (request,response,next)=>{
+    try{
+        AdminPosts.findByIdAndRemove({_id:request.params.userId})
+        .then(result=>{return response.status(200).json({message:"id is removed",status:true})})
+        .catch(err=>{return response.status(200).json({message:"something went wrong",status:false})})
+    }catch(err){
+        console.log(err)
+        return response.status(500).json({error:"Internal server error",status:false});
+    }
+}
 
 export const signUp = async (request, response) => {
     try {
@@ -134,7 +145,7 @@ export const unBanUser = async (request, response) => {
 }
 
 export const viewSpam = (request, response, next) => {
-    SpamUser.find()
+    Spam.find()
         .then(result => {
             return response.status(200).json({ allSpamUser: result, status: true });
         })
