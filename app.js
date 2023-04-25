@@ -4,12 +4,12 @@ import express from "express";
 import userRoute from "./routes/user.route.js";
 import adminRoute from "./routes/admin.route.js";
 import postRoute from "./routes/post.route.js";
+import cors from "cors";
 const app = express();
 app.use(bodyParser.json());
-import cors from "cors";
 
 app.use(bodyParser.urlencoded({ extended: true }));
-const url = "mongodb+srv://patelshivani3008:shivani30@cluster0.clvhszv.mongodb.net/my_wings?retryWrites=true&w=majority";
+const url = "mongodb+srv://itsAjay:Ajay123@cluster0.p5bdwqq.mongodb.net/mywngs?retryWrites=true&w=majority";
 
 mongoose.connect(url)
     .then(result => {
@@ -25,3 +25,5 @@ mongoose.connect(url)
     .catch(err => {
         console.log(err);
     })
+    // FFA500
+    // FF6700

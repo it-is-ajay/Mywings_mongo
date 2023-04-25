@@ -7,8 +7,12 @@ import bcrypt from "bcryptjs";
 import { transporter } from "../model/email.js";
 import { Collabration } from "../model/collaboration.model.js";
 import { response } from "express";
+<<<<<<< HEAD
+import jwt from "jsonwebtoken";
+=======
 import { Spam } from "../model/spam.model.js";
 import {validationResult} from "express-validator";
+>>>>>>> c6180a9da683279b5cf0d5b8cbd37e00598448e0
 
 export const help = async (request, response) => {
     try {
@@ -115,6 +119,13 @@ export const removeFollower = async (request, response) => {
     }
 }
 export const spam = (request, response) => {
+<<<<<<< HEAD
+
+
+
+
+
+=======
     Spam.create(request.body)
     .then(result=>{
         return response.status(200).json({result:"user was spam",status:true});
@@ -122,6 +133,7 @@ export const spam = (request, response) => {
    .catch(err=>{
         return response.status(500).json({err:"Internal server error",status:false});
     })
+>>>>>>> c6180a9da683279b5cf0d5b8cbd37e00598448e0
 }
 
 export const searchProfileByKeyword = async (request, response) => {
@@ -173,11 +185,16 @@ export const signUp = async (request, response, next) => {
 
 export const signIn = async (request, response, next) => {
     try {
-        let user = await User.findOne({ email: request.body.email })
+        const user = await User.findOne({
+            $or: [
+                { email: request.body.usernameOrEmail },
+                { userName: request.body.usernameOrEmail }
+            ]
+        });
         if (!user)
             return response.status(400).json({ error: "bad request", status: false })
         await bcrypt.compare(request.body.password, user.password);
-        return response.status(200).json({ message: "sign in success", status: true })
+        return response.status(200).json({ message: "sign in success",token:jwt.sign({ subject: user.email }, 'fdfxvcvnreorevvvcrerer'), status: true })
 
     }
     catch (err) {
@@ -217,30 +234,27 @@ export const forgotPassword = async (request, response) => {
         from: "ajey6162@gmail.com",
         to: "patelshivani3008@gmail.com",
         subject: "OTP code",
-        text: ""+otp
+        text: "" + otp
     }
-    transporter.sendMail(mailOptions,(error,info)=>{
+    transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error(error);
             return response.status(500).json({ message: 'Error sending OTP code' });
-          } else {
+        } else {
             console.log('OTP sent:', info.response);
             return response.status(200).json({ message: 'OTP code sent successfully' });
-          }
+        }
     })
 }
 
-export const checkPassword = async(request,response)=>{
-    
-}
 
 
 export const getUserById = async (request, response) => {
     await User.find({ _id: request.params._id })
         .then(result => {
-            if(!result.length == 0)
+            if (!result.length == 0)
                 return response.status(200).json({ user: result, status: true });
-                return response.status(500).json({error:"user not found",status:false});
+            return response.status(500).json({ error: "user not found", status: false });
         })
         .catch(err => {
             return response.status(500).json({ error: "Internal server error", status: false });
@@ -250,9 +264,9 @@ export const getUserById = async (request, response) => {
 export const getUserByArt = async (request, response) => {
     await User.find({ art: request.params.art })
         .then(result => {
-            if(!result.length == 0)
+            if (!result.length == 0)
                 return response.status(200).json({ user: result, status: true });
-                return response.status(500).json({error:"user not found",status:false});
+            return response.status(500).json({ error: "user not found", status: false });
         })
         .catch(err => {
             console.log(err);
@@ -262,7 +276,7 @@ export const getUserByArt = async (request, response) => {
 
 export const updateProfileById = async (request, response) => {
     try {
-        await User.updateOne({ _id: request.body.id }, request.body);      
+        await User.updateOne({ _id: request.body.id }, request.body);
         return response.status(200).json({ message: "user was updated", status: true });
     } catch (err) {
         return response.status(500).json({ err: "Internal server error", status: false });
@@ -274,7 +288,7 @@ export const uploadProfile = async (request, response) => {
         const updatedUser = await User.findOneAndUpdate({ _id: request.body.id },
             {
                 profilePhoto: request.body.profilePhoto
-            }, { new: true});
+            }, { new: true });
         return response.status(200).json({ user: updatedUser, status: true });
     } catch (err) {
         return response.status(500).json({ error: "Internal server error", status: false });
@@ -290,13 +304,13 @@ export const getCollabrationDetails = async (request, response) => {
             return response.status(500).json({ error: "Internal server error", status: false });
         })
 }
-export const CollabrationCancel = async (request,response)=>{
-    await Collabration.findOneAndRemove({_id:request.params._id})
-    .then(result=>{
-        return response.status(200).json({message:"Collabration cancel",status:true});
-    })
-    .catch(err=>{
-        console.log(err);
-        return response.status(500).json({err:"Internal server error",status:false});
-    })
+export const CollabrationCancel = async (request, response) => {
+    await Collabration.findOneAndRemove({ _id: request.params._id })
+        .then(result => {
+            return response.status(200).json({ message: "Collabration cancel", status: true });
+        })
+        .catch(err => {
+            console.log(err);
+            return response.status(500).json({ err: "Internal server error", status: false });
+        })
 }
