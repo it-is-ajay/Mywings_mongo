@@ -6,7 +6,7 @@ export const postPage = (request, response, next) => { }
 export const getAllPost = (request, response, next) => {
     try {
         
-        Post.find()
+        Post.find().populate('userId')
             .then((result) => {
                 return response.status(200).json({ message: "data found", result: result, status: true })
             })
@@ -16,6 +16,10 @@ export const getAllPost = (request, response, next) => {
 }
 
 export const uploadPost = async (request, response) => {
+    let file = await (request.file) ? request.file.filename : null;
+    if(!file)
+    return response.status(400).json({ result: "bad request", status: false })
+    request.body.file=file;
     try {
         request.body.isLiked=false;
         Post.create(request.body)

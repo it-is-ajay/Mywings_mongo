@@ -178,8 +178,6 @@ export const signUp = async (request, response, next) => {
 }
 
 export const signIn = async (request, response, next) => {
-    console.log(request.body.usernameOrEmail);
-    console.log(request.body.password);
     try {
         const user = await User.findOne({
             $or: [
