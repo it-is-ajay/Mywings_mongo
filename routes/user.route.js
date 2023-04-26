@@ -1,8 +1,8 @@
 import express from "express"
-
-import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt, updateProfileById, uploadProfile, getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost} from "../controller/user.controller.js"
-
 const router = express.Router();
+import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt, updateProfileById, uploadProfile, getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost, signIn} from "../controller/user.controller.js"
+import { verify } from "../middleware/tokenVarification.js";
+import { body } from "express-validator";
 
 router.post("/help",help);
 router.get("/follower/:userId/:friendUserId",follower);
@@ -26,7 +26,7 @@ router.post("/signUp",
     body("name", "name is required").notEmpty().isAlpha(),
     body("userName").notEmpty(),
     body("password").notEmpty().isStrongPassword({
-        minLength:8,
+        maxLength:8,
         minLowercase:1,
         minUppercase:1,
         minNumbers:1,
@@ -36,8 +36,7 @@ router.post("/signUp",
     body("email").isEmail()
 ,signUp);                      
 router.post("/uploadPost",uploadPost);
-
-
+router.post("/signin",signIn)
 router.get("/forgotPassword", forgotPassword);
 
 
