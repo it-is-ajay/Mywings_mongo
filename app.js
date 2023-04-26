@@ -5,12 +5,12 @@ import userRoute from "./routes/user.route.js";
 import adminRoute from "./routes/admin.route.js";
 import postRoute from "./routes/post.route.js";
 import cors from "cors";
+import path from "path";
 const app = express();
 app.use(bodyParser.json());
-
+app.use('/public',express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
-const url = "mongodb+srv://itsAjay:Ajay12345@cluster0.p5bdwqq.mongodb.net/mywings?retryWrites=true&w=majority";
-
+const url="mongodb+srv://nivendravishvakarma:nivendra6267@cluster0.ooafvjm.mongodb.net/mywings?retryWrites=true&w=majority";
 mongoose.connect(url)
     .then(result => {
         app.use(cors());
