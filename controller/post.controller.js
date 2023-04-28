@@ -4,9 +4,11 @@ import { Comment } from "../model/comment.model.js";
 export const postPage = (request, response, next) => { }
 
 export const getAllPost = (request, response, next) => {
+    let page = parseInt(request.query.page) || 1;
+    let perPage = 10;
     try {
         
-        Post.find()
+        Post.find().populate('userId').skip((page-1)*10).limit(10)
             .then((result) => {
                 return response.status(200).json({ message: "data found", result: result, status: true })
             })
@@ -16,6 +18,10 @@ export const getAllPost = (request, response, next) => {
 }
 
 export const uploadPost = async (request, response) => {
+    let file = await (request.file) ? request.file.filename : null;
+    if(!file)
+    return response.status(400).json({ result: "bad request", status: false })
+    request.body.file=file;
     try {
         request.body.isLiked=false;
         Post.create(request.body)
@@ -26,12 +32,10 @@ export const uploadPost = async (request, response) => {
 }
 
 export const getAllLikes = (request, response, next) => {
-    console.log(request.body.postId);
     Post.findById({ _id: request.body.postId })
         .populate("likeItems.friendUserId").then(result => {
             return response.status(200).json(result);
         }).catch(err => {
-            console.log(err);
             return response.status(500).json({ message: "internal server error", status: false })
         })
 }
@@ -46,16 +50,16 @@ export const getSavedPost = (request, response, next) => {
         })
 }
 
-export const getAllComments = (request, response, next) => {
-    try {
-        let data = Comment.find({ userId: request.body.userId, postId: request.body.postId })
-        if (data)
+export const getAllComments =(request, response, next) => {
+         Comment.find({userPostId:request.body.userPostId}).populate("friendUserId").then(result=>{
             return response.status(200).json({ message: "data found", result: result, status: true })
-        return response.status(404).json({ message: "requested data not found", status: false })
-    } catch (error) {
-        console.log(error);
-        return response.status(500).json({ error: "internal server error", status: false });
-    }
+         }).catch(err=>{
+            return response.status(500).json({ error: "internal server error", status: false });
+         })
+        
+
+      
+    
 }
 
 
