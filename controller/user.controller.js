@@ -268,14 +268,14 @@ export const getUserByArt = async (request, response) => {
         });
 }
 
-export const updateProfileById = async (request, response) => {
-    try {
-        await User.updateOne({ _id: request.body.id }, request.body);
-        return response.status(200).json({ message: "user was updated", status: true });
-    } catch (err) {
-        return response.status(500).json({ err: "Internal server error", status: false });
-    }
-}
+// export const updateProfileById = async (request, response) => {
+//     try {
+//         await User.updateOne({ _id: request.body.id }, request.body);
+//         return response.status(200).json({ message: "user was updated", status: true });
+//     } catch (err) {
+//         return response.status(500).json({ err: "Internal server error", status: false });
+//     }
+// }
 
 export const uploadProfile = async (request, response) => {
     try {
