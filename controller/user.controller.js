@@ -9,7 +9,7 @@ import { Collabration } from "../model/collaboration.model.js";
 import { response } from "express";
 import jwt from "jsonwebtoken";
 import { Spam } from "../model/spam.model.js";
-import {validationResult} from "express-validator";
+import { validationResult } from "express-validator";
 
 export const help = async (request, response) => {
     try {
@@ -116,18 +116,13 @@ export const removeFollower = async (request, response) => {
     }
 }
 export const spam = (request, response) => {
-
-
-
-
-
     Spam.create(request.body)
-    .then(result=>{
-        return response.status(200).json({result:"user was spam",status:true});
-    })
-   .catch(err=>{
-        return response.status(500).json({err:"Internal server error",status:false});
-    })
+        .then(result => {
+            return response.status(200).json({ result: "user was spam", status: true });
+        })
+        .catch(err => {
+            return response.status(500).json({ err: "Internal server error", status: false });
+        })
 }
 
 export const searchProfileByKeyword = async (request, response) => {
@@ -159,18 +154,17 @@ export const deleteAccount = async (request, response) => {
 export const signUp = async (request, response, next) => {
     try {
         let error = validationResult(request);
-        if(!error.isEmpty())
-            return response.status(400).json({ error: "bad request", status: false,message:error.array()});
+        if (!error.isEmpty())
+            return response.status(400).json({ error: "bad request", status: false, message: error.array() });
         let email = await User.findOne({ email: request.body.email })
         if (email)
             return response.status(400).json({ message: "already exist", status: false });
         let salt = await bcrypt.genSalt(10);
         request.body.password = await bcrypt.hash(request.body.password, salt);
         let user = await User.create(request.body)
-        if (user)
-            return response.status(200).json({ message: "sign up success", user: user, status: true })
-        return response.status(400).json({ message: "bad request", user: user, status: true })
-
+        return (user)
+            ? response.status(200).json({ user: { ...user.toObject(), password: undefined }, token: jwt.sign({ subject: user.email }, 'fdfxvcvnreorevvvcrerer'), status: true })
+            : response.status(401).json({ message: "Unauthorized person", status: false })
     } catch (err) {
         console.log(err);
         return response.status(500).json({ error: "internal server error", status: false });
@@ -178,8 +172,6 @@ export const signUp = async (request, response, next) => {
 }
 
 export const signIn = async (request, response, next) => {
-    console.log(request.body.usernameOrEmail);
-    console.log(request.body.password);
     try {
         const user = await User.findOne({
             $or: [
@@ -189,8 +181,9 @@ export const signIn = async (request, response, next) => {
         });
         if (!user)
             return response.status(400).json({ error: "bad request", status: false })
-        await bcrypt.compare(request.body.password, user.password);
-        return response.status(200).json({user:{...user.toObject(),password:undefined} ,token:jwt.sign({ subject: user.email }, 'fdfxvcvnreorevvvcrerer'), status: true })
+        return (await bcrypt.compare(request.body.password, user.password))
+            ? response.status(200).json({ user: { ...user.toObject(), password: undefined }, token: jwt.sign({ subject: user.email }, 'fdfxvcvnreorevvvcrerer'), status: true })
+            : response.status(401).json({ message: "Unauthorized person", status: false })
 
     }
     catch (err) {

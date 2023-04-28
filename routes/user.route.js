@@ -23,7 +23,7 @@ router.post("/editProfile/updateDetails",updateProfileById);
 router.post("/editProfile/setting/deleteAccount",deleteAccount);
 router.post("/editProfile/setting/help",help);           
 router.post("/signUp",
-    body("name", "name is required").notEmpty().isAlpha(),
+    body("name").notEmpty().isAlpha(),
     body("userName").notEmpty(),
     body("password").notEmpty().isStrongPassword({
         maxLength:8,
@@ -32,8 +32,8 @@ router.post("/signUp",
         minNumbers:1,
         minLength:6
     }).withMessage("password must contain upercase,lowercase,number"),
-    body("contact").isNumeric(),
-    body("email").isEmail()
+    body("contact","Invalid mobile number").isNumeric().isLength(10),
+    body("email","Invalid Email").isEmail()
 ,signUp);                      
 router.post("/uploadPost",uploadPost);
 router.post("/signin",signIn)
