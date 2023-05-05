@@ -1,14 +1,15 @@
 import { Post } from "../model/post.model.js";
 import { Comment } from "../model/comment.model.js";
 
+
 export const postPage = (request, response, next) => { }
 
 export const getAllPost = (request, response, next) => {
     let page = parseInt(request.query.page) || 1;
-    let perPage = 10;
+    let perPage = 8;
     try {
-        
-        Post.find().populate('userId').skip((page-1)*10).limit(10)
+
+        Post.find().populate('userId').skip((page - 1) * 8).limit(8)
             .then((result) => {
                 return response.status(200).json({ message: "data found", result: result, status: true })
             })
@@ -19,11 +20,12 @@ export const getAllPost = (request, response, next) => {
 
 export const uploadPost = async (request, response) => {
     let file = await (request.file) ? request.file.filename : null;
-    if(!file)
-    return response.status(400).json({ result: "bad request", status: false })
-    request.body.file=file;
+    if (!file)
+        return response.status(400).json({ result: "bad request", status: false })
+        request.body.file = file;
     try {
-        request.body.isLiked=false;
+        request.body.type=request.file.mimetype;
+        request.body.isLiked = false;
         Post.create(request.body)
         return response.status(200).json({ message: "post uploaded by user ", status: true });
     } catch (err) {
@@ -50,16 +52,13 @@ export const getSavedPost = (request, response, next) => {
         })
 }
 
-export const getAllComments =(request, response, next) => {
-         Comment.find({userPostId:request.body.userPostId}).populate("friendUserId").then(result=>{
-            return response.status(200).json({ message: "data found", result: result, status: true })
-         }).catch(err=>{
-            return response.status(500).json({ error: "internal server error", status: false });
-         })
-        
+export const getAllComments = (request, response, next) => {
+    Post.findById({_id:request.body.userPostId }).populate("commentItems.friendUserId").then(result => {
+        return response.status(200).json({ message: "data found", result: result, status: true })
+    }).catch(err => {
+        return response.status(500).json({ error: "internal server error", status: false });
+    })
 
-      
-    
 }
 
 
@@ -89,8 +88,10 @@ export const likePost = async (request, response, next) => {
 
 export const commentPost = async (request, response, next) => {
     try {
-        await Comment.create(request.body);
-        return response.status(200).json({ message: "Post saved successful Sucessfull", status: true });
+        let postFound = await Post.findOne({ _id: request.body.userPostId });
+        postFound.commentItems.push({ friendUserId: request.body.friendUserId },{comment:request.body.comment});
+        await postFound.save();
+        return response.status(200).json({ message: "comment successful", status: true })
 
     } catch (error) {
         console.log(error);
@@ -103,8 +104,7 @@ export const savePost = async (request, response, next) => {
         let postFound = await Post.findOne({ _id: request.body.postId });
         if (postFound) {
             if (postFound.saveItems.some((item) => item.friendUserId == request.body.friendUserId)) {
-                let index = postFound.saveItems.findIndex((user) => 
-                { return user.friendUserId == request.body.friendUserId });
+                let index = postFound.saveItems.findIndex((user) => { return user.friendUserId == request.body.friendUserId });
                 postFound.saveItems.splice(index, 1);
                 await postFound.save();
                 return response.status(200).json({ message: " you unsaved the post", status: true })
