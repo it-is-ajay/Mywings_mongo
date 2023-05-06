@@ -24,15 +24,16 @@ const PostSchema = new mongoose.Schema({
         friendUserId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user"
-        }
+        } 
     }], // kin kin user n ye post pr like kra unki id
 
-    saveItems: [{
-        userId: {
+    commentItems: [{
+        friendUserId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user"
-        }
-    }] // kin kin user n ye post ko save kra unki id
+        },
+        comment: String
+    }] // kin kin user n ye post pr comment kra unki id
 })
 
 export const Post = mongoose.model("post", PostSchema);
