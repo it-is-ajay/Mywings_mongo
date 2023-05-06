@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadPost, postPage, getAllComments, getAllLikes, getSavedPost, getAllPost, commentPost, likePost, savePost } from "../controller/post.controller.js";
+import { uploadPost, postPage, getAllComments, getAllLikes, getSavedPost, getAllPost, commentPost, likePost, getPostById } from "../controller/post.controller.js";
 import multer from "multer";
 const router = express.Router();
 
@@ -13,6 +13,5 @@ router.post("/getLike", getAllLikes);
 router.get("/getSavedPost", getSavedPost);
 router.post("/getComment", getAllComments);
 router.post("/comment", commentPost);
-router.post("/save", savePost);
-
+router.post("/getPostsById",getPostById);
 export default router;
