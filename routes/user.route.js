@@ -4,6 +4,9 @@ import {follower, following, getAllFollower, getAllFollowing, help, removeFollow
 import { verify } from "../middleware/tokenVarification.js";
 import { body } from "express-validator";
 
+import multer from "multer";
+const upload = multer({ dest: "public/profilephoto/" })
+
 router.post("/help",help);
 router.get("/follower/:userId/:friendUserId",follower);
 router.get("/following/:userId/:friendUserId",following);

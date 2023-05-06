@@ -11,11 +11,20 @@ import jwt from "jsonwebtoken";
 import { Spam } from "../model/spam.model.js";
 import { validationResult } from "express-validator";
 import { getPostById } from "./post.controller.js";
+import multer from "multer";
+import path from "path";
+import fs from 'fs';
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const help = async (request, response) => {
     try {
-        return response.status(200).json({ result: await new Help(request.body).save(), status: true });
+        let user = await User.findOne({ email: request.body.email });
+        if (user)
+            return response.status(200).json({ result: await new Help({ userId: user._id, problem: request.body.problem }).save(), status: true });
+        return response.status(400).json({ message: "bad request" });
     } catch (err) {
+        console.log(err)
         return response.status(500).json({ result: "internal server error", status: false });
     }
 }
@@ -51,7 +60,7 @@ export const following = async (request, response) => {
             if (user.followings.some((following) => following.friendUserId == request.params.friendUserId))
                 return response.status(200).json({ message: "already followed...", status: true });
             user.followings.push({ friendUserId: request.params.friendUserId });
-            let savedCart = await user.save();
+            let save = await user.save();
             return response.status(200).json({ message: "successfull added...", status: true });
         }
         else {
@@ -171,7 +180,6 @@ export const signUp = async (request, response, next) => {
         return response.status(500).json({ error: "internal server error", status: false });
     }
 }
-
 export const signIn = async (request, response, next) => {
     try {
         const user = await User.findOne({
@@ -261,25 +269,23 @@ export const getUserByArt = async (request, response) => {
 }
 
 export const updateProfileById = async (request, response) => {
-    try {
-        await User.updateOne({ _id: request.body.id }, request.body);
-        return response.status(200).json({ message: "user was updated", status: true });
-    } catch (err) {
-        return response.status(500).json({ err: "Internal server error", status: false });
-    }
+    let user = await User.findById(request.body._id);
+    if (user.profilePhoto) {
+        const imagePath = await path.join(__dirname, '../public/profilephoto', user.profilePhoto);
+        console.log(imagePath)
+        await fs.unlink(imagePath, (err) => {
+            if (err) console.log(err);
+        });
+      }
+    let file = await (request.file) ? request.file.filename : null;
+    request.body.profilePhoto = file;
+    User.updateOne({ _id: request.body._id }, request.body).then(result => {
+        return response.status(200).json({ message: "user was updated", user: request.body, status: true });
+    })
+        .catch(err => {
+            return response.status(500).json({ err: "Internal server error", status: false });
+        })
 }
-
-export const uploadProfile = async (request, response) => {
-    try {
-        const updatedUser = await User.findOneAndUpdate({ _id: request.body.id },
-            {
-                profilePhoto: request.body.profilePhoto
-            }, { new: true });
-        return response.status(200).json({ user: updatedUser, status: true });
-    } catch (err) {
-        return response.status(500).json({ error: "Internal server error", status: false });
-    }
-};
 
 export const getCollabrationDetails = async (request, response) => {
     await Collabration.create(request.body)

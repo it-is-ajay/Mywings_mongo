@@ -3,6 +3,7 @@ import { Comment } from "../model/comment.model.js";
 import { User } from "../model/user.model.js"
 import { response } from "express";
 
+
 export const postPage = (request, response, next) => { }
 
 export const getAllPost = (request, response, next) => {
@@ -22,8 +23,9 @@ export const uploadPost = async (request, response) => {
     let file = await (request.file) ? request.file.filename : null;
     if (!file)
         return response.status(400).json({ result: "bad request", status: false })
-    request.body.file = file;
+        request.body.file = file;
     try {
+        request.body.type=request.file.mimetype;
         request.body.isLiked = false;
         Post.create(request.body)
         return response.status(200).json({ message: "post uploaded by user ", status: true });
@@ -52,7 +54,7 @@ export const getSavedPost = (request, response, next) => {
 }
 
 export const getAllComments = (request, response, next) => {
-    Comment.find({ userPostId: request.body.userPostId }).populate("friendUserId").then(result => {
+    Post.findById({_id:request.body.userPostId }).populate("commentItems.friendUserId").then(result => {
         return response.status(200).json({ message: "data found", result: result, status: true })
     }).catch(err => {
         return response.status(500).json({ error: "internal server error", status: false });

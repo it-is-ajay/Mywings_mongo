@@ -7,7 +7,9 @@ import postRoute from "./routes/post.route.js";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+
 const app = express();
+
 app.use(bodyParser.json());
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
