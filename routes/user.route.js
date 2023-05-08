@@ -1,6 +1,6 @@
 import express from "express"
 const router = express.Router();
-import {follower, following, getAllFollower, getAllFollowing,updateProfileById, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt,getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost, signIn} from "../controller/user.controller.js"
+import {follower, following, getAllFollower, getAllFollowing,updateProfileById, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt,getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost, signIn, deletepost} from "../controller/user.controller.js"
 import { verify } from "../middleware/tokenVarification.js";
 import { body } from "express-validator";
 
@@ -41,6 +41,7 @@ router.post("/signUp",
 router.post("/uploadPost",uploadPost);
 router.post("/signin",signIn)
 router.get("/forgotPassword", forgotPassword);
+router.get("/deletepost/:userid/:postid",deletepost);
 
 
 export default router;

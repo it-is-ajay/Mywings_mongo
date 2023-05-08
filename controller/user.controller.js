@@ -3,7 +3,7 @@ import { Follower } from "../model/follower.model.js";
 import { Following } from "../model/following.model.js";
 import { Help } from "../model/help.model.js";
 import { Post } from "../model/post.model.js";
-import bcrypt from "bcryptjs";
+
 import { transporter } from "../model/email.js";
 import { Collabration } from "../model/collaboration.model.js";
 import { response } from "express";
@@ -280,12 +280,12 @@ export const getUserByArt = async (request, response) => {
 export const updateProfileById = async (request, response) => {
     let user = await User.findById(request.body._id);
     if (user.profilePhoto) {
-        const imagePath = await path.join(__dirname, '../public/profilephoto', user.profilePhoto);
+        const imagePath = path.join(__dirname, '../public/profilephoto', user.profilePhoto);
         console.log(imagePath)
-        await fs.unlink(imagePath, (err) => {
+        fs.unlink(imagePath, (err) => {
             if (err) console.log(err);
         });
-      }
+    }
     let file = await (request.file) ? request.file.filename : null;
     request.body.profilePhoto = file;
     User.updateOne({ _id: request.body._id }, request.body).then(result => {
@@ -315,3 +315,30 @@ export const CollabrationCancel = async (request, response) => {
             return response.status(500).json({ err: "Internal server error", status: false });
         })
 }
+export const deletepost = async (request, response) => {
+    const userid = request.params.userid;
+    const postid = request.params.postid;
+    try {
+        let post = await Post.find({_id:postid});
+        if (post[0].userId == userid ) {
+            const postpath = path.join(__dirname,'../public/images', post[0].file);
+            fs.unlink(postpath, (err) => {
+                if (err) console.log(err);
+            });
+          await  Post.findByIdAndRemove({_id:postid}).then(result=>{
+            return response.status(200).json({message:"post deleted"})
+          }).catch(err=>{
+            return response.status(500).json({message:"internal server error"})
+          })
+        }
+        else
+            return response.status(400).json("bad request");
+    } catch (err) {
+        return response.status(500).json("internal server errore");
+        
+    }
+
+}
+
+
+

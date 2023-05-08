@@ -1,5 +1,6 @@
 import { Post } from "../model/post.model.js";
 import { Comment } from "../model/comment.model.js";
+import { request, response } from "express";
 
 
 export const postPage = (request, response, next) => { }
@@ -9,10 +10,11 @@ export const getAllPost = (request, response, next) => {
     let perPage = 8;
     try {
 
-        Post.find().populate('userId').skip((page - 1) * 8).limit(8)
+        Post.find().populate('userId').skip((page - 1) * 8)
             .then((result) => {
                 return response.status(200).json({ message: "data found", result: result, status: true })
-            })
+        return response.status(500).json({ error: "internal server error", status: true });
+    }).catch(err=>{})
     } catch (error) {
         return response.status(500).json({ error: "internal server error", status: true });
     }
