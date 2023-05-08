@@ -21,7 +21,7 @@ export const editProfile = async (request, response, next) => {
 
 export const viewUsers = (request, response, next) => {
     User.find().then(result => { return response.status(200).json({ allUsers: result, status: true }) })
-        .catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
+    .catch(err => { return response.status(500).json({ error: "Internal server error", status: false }) })
 }
 
 export const deletePost = (request, response, next) => {

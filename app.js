@@ -18,9 +18,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
- const url = "mongodb://nivendravishvakarma:nivendra@ac-7buhfx5-shard-00-00.ooafvjm.mongodb.net:27017,ac-7buhfx5-shard-00-01.ooafvjm.mongodb.net:27017,ac-7buhfx5-shard-00-02.ooafvjm.mongodb.net:27017/mywings?ssl=true&replicaSet=atlas-2oejy5-shard-0&authSource=admin&retryWrites=true&w=majority"
-
+const url = "mongodb+srv://itsAjay:f0LPeGkDzDoPCZ52@cluster0.p5bdwqq.mongodb.net/mywings?retryWrites=true&w=majority"
 mongoose.connect(url)
     .then(result => {
         app.use(cors());
