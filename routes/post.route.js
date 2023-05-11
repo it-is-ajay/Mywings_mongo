@@ -3,7 +3,7 @@ import { uploadPost, postPage, getAllComments, getAllLikes, getSavedPost, getAll
 import multer from "multer";
 const router = express.Router();
 
-const upload = multer({ dest: "public/images/" })
+const upload = multer({ dest: "public/uploads/" })
 
 router.post("/uploadPost", upload.single("file"), uploadPost);
 router.get("/postPage", postPage);
