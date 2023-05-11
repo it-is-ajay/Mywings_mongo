@@ -1,17 +1,23 @@
 import { Post } from "../model/post.model.js";
 import { Comment } from "../model/comment.model.js";
 import { request, response } from "express";
+import { Notification } from "../model/notification.model.js";
 
 
 export const postPage = (request, response, next) => { }
 
-export const getAllPost = (request, response, next) => {
+export const getAllPost =async (request, response, next) => {
+    console.log("inside post")
     let page = parseInt(request.query.page) || 1;
-    let perPage = 200;
+    let perPage =3;
     try {
-        Post.find().populate('userId').sort({ _id: 1 }).skip((page - 1) * perPage).limit(perPage)
+        let totalpost= await Post.find();
+       await Post.find().populate('userId').sort({ _id: 1 }).skip((page - 1) * perPage).limit(perPage)
             .then((result) => {
-                return response.status(200).json({ message: "data found", result: result.reverse(), status: true });
+                result.map((item)=>{
+                    return item.userId.password=undefined;
+                })
+                return response.status(200).json({ message: "data found", result: result.reverse(),totalpost:totalpost.length, status: true });
             });
     } catch (error) {
         return response.status(500).json({ error: "internal server error", status: true });
@@ -106,6 +112,9 @@ export const likePost = async (request, response, next) => {
 export const commentPost = async (request, response, next) => {
     try {
         let postFound = await Post.findOne({ _id: request.body.postId });
+        console.log(postFound.userId)
+        console.log(postFound)
+        let notify= await Notification.create({currentUserId:postFound.userId,currentPost:postFound._id,frienduserid:request.body.friendUserId,frienduseract:request.body.comment})
         postFound.commentItems.push({ friendUserId: request.body.friendUserId, comment: request.body.comment });
         await postFound.save();
         return response.status(200).json({ message: "comment successful", status: true })
