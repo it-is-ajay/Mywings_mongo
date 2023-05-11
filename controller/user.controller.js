@@ -180,25 +180,6 @@ export const signUp = async (request, response, next) => {
         return response.status(500).json({ error: "internal server error", status: false });
     }
 }
-export const signIn = async (request, response, next) => {
-    try {
-        const user = await User.findOne({
-            $or: [
-                { email: request.body.usernameOrEmail },
-                { userName: request.body.usernameOrEmail }
-            ]
-        });
-        if (!user)
-            return response.status(400).json({ error: "bad request", status: false })
-        return (await bcrypt.compare(request.body.password, user.password))
-            ? response.status(200).json({ user: { ...user.toObject(), password: undefined }, token: jwt.sign({ subject: user.email }, 'fdfxvcvnreorevvvcrerer'), status: true })
-            : response.status(401).json({ message: "Unauthorized person", status: false })
-    }
-    catch (err) {
-        console.log(err);
-        return response.status(500).json({ error: "internal server error", status: false });
-    }
-}
 
 
 export const uploadPost = (request, response) => {
@@ -247,7 +228,19 @@ export const getUserById = async (request, response) => {
     await User.find({ _id: request.params.userId })
         .then(result => {
             if (!result.length == 0)
-                return response.status(200).json({ user: {...result[0].toObject(), password: undefined} , status: true });
+                return response.status(200).json({ user: { ...result[0].toObject(), password: undefined }, status: true });
+            return response.status(500).json({ error: "user not found", status: false });
+        })
+        .catch(err => {
+            return response.status(500).json({ error: "Internal server error", status: false });
+        });
+}
+
+export const getUserByUserName = async (request, response) => {
+    await User.find({ _id: request.params.userName })
+        .then(result => {
+            if (!result.length == 0)
+                return response.status(200).json({ user: { ...result[0].toObject(), password: undefined }, status: true });
             return response.status(500).json({ error: "user not found", status: false });
         })
         .catch(err => {
@@ -273,10 +266,10 @@ export const updateProfileById = async (request, response) => {
     if (user.profilePhoto) {
         const imagePath = await path.join(__dirname, '../public/profilephoto', user.profilePhoto);
         console.log(imagePath)
-        await fs.unlink(imagePath, (err) => {
+        fs.unlink(imagePath, (err) => {
             if (err) console.log(err);
         });
-      }
+    }
     let file = await (request.file) ? request.file.filename : null;
     request.body.profilePhoto = file;
     User.updateOne({ _id: request.body._id }, request.body).then(result => {
@@ -328,3 +321,76 @@ export const savePost = async (request, response) => {
         return response.status(500).json({ error: "internal server error", status: false });
     }
 }
+
+export const signUps = async (request, response, next) => {
+    try {
+        let error = validationResult(request);
+        if (!error.isEmpty())
+            return response.status(400).json({ error: "bad request", status: false, message: error.array() });
+        let email = await User.findOne({ email: request.body.email })
+        if (email)
+            return response.status(400).json({ message: "already exist", status: false });
+        let salt = await bcrypt.genSalt(10);
+        request.body.password = await bcrypt.hash(request.body.password, salt);
+        let user = await User.create(request.body)
+        return (user)
+            ? response.status(200).json({ user: { ...user.toObject(), password: undefined }, token: jwt.sign({ subject: user.email }, 'fdfxvcvnreorevvvcrerer'), status: true })
+            : response.status(401).json({ message: "Unauthorized person", status: false })
+    } catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "internal server error", status: false });
+    }
+}
+
+export const signIn = async (request, response, next) => {
+    try {
+        const user = await User.findOne({ $or: [{ email: request.body.usernameOrEmail }, { userName: request.body.usernameOrEmail }] });
+        if (!user)
+            return response.status(400).json({ error: "bad request", status: false })
+        if (await bcrypt.compare(request.body.password, user.password)) {
+            let token = jwt.sign({ subject: user.email }, 'fdfxvcvnreorevvvcrerer');
+            request.session.user = { isLoggedIn: true, currentUser: user.userName, token };
+            console.log(request.session);
+            return response.status(200).json({ user: { ...user.toObject(), password: undefined }, token, status: true })
+        } else {
+            return response.status(401).json({ message: "Unauthorized person", status: false })
+        }
+    }
+    catch (err) {
+        return response.status(500).json({ error: "internal server error", status: false });
+    }
+}
+
+export const signOut = async (request, response) => {
+    try {        
+        console.log(request.session);
+        // request.session.user = null;
+        // request.session.destroy();
+        // console.log(request.session);
+        return response.status(200).json({ message: "user logged out", status: true });
+    }catch (err) {
+        console.log(err);
+        return response.status(500).json({ error: "internal server error", status: false });
+    }
+}
+
+export const isLoggedIn = async (request, response) => {
+    if (!request.session.user)
+        return response.status(401).json({ message: "Unauthorized person", status: false })
+    return response.status().json({ session: request.session.user })
+}
+
+
+// export const addUser = async (request, response, next) => {
+//     try {
+//         request.body.users.map( async (user) => {
+//             let salt = await bcrypt.genSalt(10);
+//             user.password = await bcrypt.hash(user.password, salt);
+//             await User.create(user);
+//         })
+//         return response.status(200).json({ message: "user added", status: true });
+//     } catch (err) {
+//         console.log(err);
+//         return response.status(500).json({ error: "internal server error", status: false });
+//     }
+// }

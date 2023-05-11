@@ -1,6 +1,6 @@
 import express from "express"
 const router = express.Router();
-import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt,uploadProfile, getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost, signIn, updateProfileById, savePost} from "../controller/user.controller.js"
+import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt, getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost, signIn, updateProfileById, savePost, signOut} from "../controller/user.controller.js"
 import { verify } from "../middleware/tokenVarification.js";
 import { body } from "express-validator";
 
@@ -19,14 +19,13 @@ router.get("/searchProfile/:keyword",searchProfileByKeyword);
 router.get("/searchProfile/viewProfile/:_id",getUserById);
 router.get("/searchByArt/:art",getUserByArt);
 router.get("/searchById/:userId",getUserById);
-router.post("/uploadProfile",uploadProfile);
 router.post("/collabrationDetails",getCollabrationDetails);
 router.get("/collabrationCancel/:_id",CollabrationCancel);
-router.post("/editProfile/updateDetails",updateProfileById);
+router.post("/updateprofile", upload.single("file"),updateProfileById);
 router.post("/editProfile/setting/deleteAccount",deleteAccount);
 router.post("/editProfile/setting/help",help);           
 router.post("/signUp",
-    body("name").notEmpty().isAlpha(),
+    body("name").notEmpty(),
     body("userName").notEmpty(),
     body("password").notEmpty().isStrongPassword({
         maxLength:8,
@@ -42,6 +41,8 @@ router.post("/uploadPost",uploadPost);
 router.post("/signin",signIn)
 router.post("/savePost", savePost);
 router.get("/forgotPassword", forgotPassword);
+router.get("/signout", signOut);
+// router.post("/addUser", addUser);
 
 
 export default router;

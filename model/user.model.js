@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     name : {
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePhoto:{
         type:String,
-        default:null,
+        default:"",
         required:false,
         trim:true
     },

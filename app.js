@@ -7,6 +7,7 @@ import postRoute from "./routes/post.route.js";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import session from "express-session";
 
 const app = express();
 
@@ -17,10 +18,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const url = "mongodb+srv://itsAjay:f0LPeGkDzDoPCZ52@cluster0.p5bdwqq.mongodb.net/mywings?retryWrites=true&w=majority"
+const url = "mongodb+srv://setbug56:NK0VwKIBxIpPLSqH@cluster0.aqsd1j2.mongodb.net/mywings?retryWrites=true&w=majority"
+// const url = "mongodb+srv://itsAjay:f0LPeGkDzDoPCZ52@cluster0.p5bdwqq.mongodb.net/mywings?retryWrites=true&w=majority"
 mongoose.connect(url)
     .then(result => {
+        app.use(session({secret: "sfksdombhattswahasfdfdsk", resave: true, saveUninitialized: true}));
         app.use(cors());
         app.use("/user", userRoute);
         app.use("/admin", adminRoute);
@@ -33,3 +35,4 @@ mongoose.connect(url)
     .catch(err => {
         console.log(err);
     })
+
