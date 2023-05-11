@@ -1,6 +1,6 @@
 import express from "express"
 const router = express.Router();
-import {follower, following, getAllFollower, getAllFollowing, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt, getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost, signIn, updateProfileById, savePost, signOut} from "../controller/user.controller.js"
+import {follower, following, getAllFollower, getAllFollowing,updateProfileById, help, removeFollower,signUp, searchProfileByKeyword, spam, unFollow, getUserById, getUserByArt,getCollabrationDetails, CollabrationCancel, forgotPassword, deleteAccount, uploadPost, signIn, deletepost,notification, signOut} from "../controller/user.controller.js"
 import { verify } from "../middleware/tokenVarification.js";
 import { body } from "express-validator";
 
@@ -25,7 +25,7 @@ router.post("/updateprofile", upload.single("file"),updateProfileById);
 router.post("/editProfile/setting/deleteAccount",deleteAccount);
 router.post("/editProfile/setting/help",help);           
 router.post("/signUp",
-    body("name").notEmpty(),
+    body("name", "name is required").notEmpty().isAlpha(),
     body("userName").notEmpty(),
     body("password").notEmpty().isStrongPassword({
         maxLength:8,
@@ -34,15 +34,16 @@ router.post("/signUp",
         minNumbers:1,
         minLength:6
     }).withMessage("password must contain upercase,lowercase,number"),
-    body("contact","Invalid mobile number").isNumeric().isLength(10),
-    body("email","Invalid Email").isEmail()
+    body("contact").isNumeric(),
+    body("email").isEmail()
 ,signUp);                      
 router.post("/uploadPost",uploadPost);
+router.get("/notification/:userid",notification)
 router.post("/signin",signIn)
-router.post("/savePost", savePost);
 router.get("/forgotPassword", forgotPassword);
 router.get("/signout", signOut);
 // router.post("/addUser", addUser);
+router.get("/deletepost/:userid/:postid",deletepost);
 
 
 export default router;
